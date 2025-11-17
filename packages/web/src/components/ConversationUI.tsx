@@ -37,7 +37,8 @@ export default function ConversationUI({
         }
       );
 
-      const data = await response.json();
+      const result = await response.json();
+      const data = result.data; // Extract from ResponseBuilder wrapper
 
       if (data.initialMessage) {
         setMessages([
@@ -82,7 +83,8 @@ export default function ConversationUI({
         }
       );
 
-      const data = await response.json();
+      const result = await response.json();
+      const data = result.data; // Extract from ResponseBuilder wrapper
 
       const assistantMessage: Message = {
         role: 'assistant',

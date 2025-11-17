@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import type { BrandingConfig } from '@kirby-gen/shared';
 
 interface BrandingFormProps {
@@ -26,6 +27,22 @@ export default function BrandingForm({
       [field]: value,
     });
   };
+
+  // Dynamically load Google Font when font family changes
+  useEffect(() => {
+    const fontName = branding.fontFamily.replace(/ /g, '+');
+    const linkId = 'google-font-branding';
+
+    let link = document.getElementById(linkId) as HTMLLinkElement;
+    if (!link) {
+      link = document.createElement('link');
+      link.id = linkId;
+      link.rel = 'stylesheet';
+      document.head.appendChild(link);
+    }
+
+    link.href = `https://fonts.googleapis.com/css2?family=${fontName}:wght@400;500;600;700&display=swap`;
+  }, [branding.fontFamily]);
 
   return (
     <div className="branding-form">

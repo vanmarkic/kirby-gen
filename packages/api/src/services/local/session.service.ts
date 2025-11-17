@@ -4,6 +4,11 @@ import { nanoid } from 'nanoid';
 import type { ISessionService } from '../../../../shared/src/interfaces/session.interface';
 import type { ProjectData } from '../../../../shared/src/types/project.types';
 
+export interface LocalSessionConfig {
+  basePath: string;
+  createDirectories?: boolean;
+}
+
 /**
  * Local file-based implementation of ISessionService
  * Stores sessions as JSON files in a configurable directory
@@ -12,9 +17,11 @@ export class LocalSessionService implements ISessionService {
   private readonly basePath: string;
   private readonly lockMap: Map<string, Promise<void>> = new Map();
 
-  constructor() {
-    this.basePath = process.env.SESSION_PATH || path.join(process.cwd(), 'sessions');
-    this.initializeBasePath();
+  constructor(config?: LocalSessionConfig) {
+    this.basePath = config?.basePath || process.env.SESSION_PATH || path.join(process.cwd(), 'sessions');
+    if (config?.createDirectories) {
+      this.initializeBasePath();
+    }
   }
 
   /**

@@ -5,7 +5,7 @@ Uses Claude Opus to guide users through creating their portfolio content schema
 
 import json
 import asyncio
-from typing import Dict, List, Optional, Any, AsyncGenerator
+from typing import Dict, List, Optional, Any, AsyncGenerator, Union
 from datetime import datetime
 import logging
 from anthropic import AsyncAnthropic, Anthropic
@@ -51,15 +51,30 @@ class DomainMappingSkill:
     their portfolio structure and generates a ContentSchema
     """
 
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: Optional[str] = None, client: Optional[Any] = None, sync_client: Optional[Any] = None):
         """
         Initialize the Domain Mapping Skill
 
         Args:
-            api_key: Anthropic API key for Claude access
+            api_key: Anthropic API key for Claude access (optional if client provided)
+            client: Pre-configured async client (AsyncAnthropic or ClaudeCLIAdapter)
+            sync_client: Pre-configured sync client (Anthropic or ClaudeCLIAdapterSync)
         """
-        self.client = AsyncAnthropic(api_key=api_key)
-        self.sync_client = Anthropic(api_key=api_key)
+        if client:
+            self.client = client
+        elif api_key:
+            self.client = AsyncAnthropic(api_key=api_key)
+        else:
+            # Will be set by main.py from config
+            self.client = None
+
+        if sync_client:
+            self.sync_client = sync_client
+        elif api_key:
+            self.sync_client = Anthropic(api_key=api_key)
+        else:
+            self.sync_client = None
+
         self.conversations: Dict[str, ConversationContext] = {}
         self.profession_templates = get_profession_templates()
 
@@ -67,7 +82,7 @@ class DomainMappingSkill:
         self,
         input_data: DomainMappingInput,
         stream: bool = True
-    ) -> AsyncGenerator[StreamingResponse, None] | DomainMappingResponse:
+    ) -> Union[AsyncGenerator[StreamingResponse, None], DomainMappingResponse]:
         """
         Process a conversation turn with the user
 

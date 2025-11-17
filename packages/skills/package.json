@@ -4,7 +4,7 @@
   "private": true,
   "description": "Claude skills for Kirby-gen",
   "scripts": {
-    "dev": "uvicorn src.main:app --reload --port 8001",
+    "dev": "bash -c 'export PYTHONPATH=$(pwd):$PYTHONPATH && source venv/bin/activate && uvicorn src.main:app --reload --port 8001'",
     "test": "pytest tests/ -v --cov=src",
     "test:unit": "pytest tests/unit/ -v --cov=src",
     "test:integration": "pytest tests/integration/ -v",

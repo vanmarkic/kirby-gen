@@ -71,7 +71,7 @@ export async function listProjects(req: Request, res: Response): Promise<void> {
   // Filter by status if provided
   let filteredProjects = projects;
   if (status) {
-    filteredProjects = projects.filter((p) => p.status === status);
+    filteredProjects = projects.filter((p: ProjectData) => p.status === status);
   }
 
   // Pagination
@@ -157,4 +157,62 @@ export async function getProjectStatus(req: Request, res: Response): Promise<voi
   };
 
   res.json(ResponseBuilder.success(status));
+}
+
+/**
+ * Initialize domain mapping conversation
+ */
+export async function initializeDomainMapping(req: Request, res: Response): Promise<void> {
+  const { projectId } = req.params;
+  const storageService = getService<IStorageService>(SERVICE_KEYS.STORAGE);
+  const { claudeService } = await import('../services/claude.service');
+
+  const project = await storageService.getProject(projectId);
+
+  if (!project) {
+    throw new NotFoundError('Project', projectId);
+  }
+
+  // Return initial message to start the conversation
+  res.json(ResponseBuilder.success({
+    initialMessage: claudeService.getInitialMessage()
+  }));
+}
+
+/**
+ * Handle domain mapping conversation message
+ */
+export async function handleDomainMappingMessage(req: Request, res: Response): Promise<void> {
+  const { projectId } = req.params;
+  const { message, conversationHistory } = req.body;
+  const storageService = getService<IStorageService>(SERVICE_KEYS.STORAGE);
+  const { claudeService } = await import('../services/claude.service');
+
+  const project = await storageService.getProject(projectId);
+
+  if (!project) {
+    throw new NotFoundError('Project', projectId);
+  }
+
+  // Use Claude AI if available, otherwise fall back to stub response
+  if (claudeService.isAvailable()) {
+    try {
+      const response = await claudeService.sendMessage(message, conversationHistory);
+      res.json(ResponseBuilder.success(response));
+    } catch (error) {
+      logger.error('Claude service error:', error);
+      res.json(ResponseBuilder.success({
+        message: "I'm having trouble connecting to the AI service. Please try again in a moment.",
+        schema: null,
+        isComplete: false
+      }));
+    }
+  } else {
+    // Fallback response when Claude is not configured
+    res.json(ResponseBuilder.success({
+      message: "Thank you for that information. Claude AI is not configured (missing ANTHROPIC_API_KEY). For now, you can proceed to the next step to continue building your portfolio.",
+      schema: null,
+      isComplete: true
+    }));
+  }
 }

@@ -22,19 +22,27 @@ interface DeploymentMetadata {
   error?: string;
 }
 
+export interface LocalDeploymentConfig {
+  basePath: string;
+  portStart?: number;
+  createDirectories?: boolean;
+}
+
 export class LocalDeploymentService implements IDeploymentService {
   private basePath: string;
   private basePort: number;
   private maxPort: number;
   private deploymentTimeout: number;
 
-  constructor() {
-    this.basePath = process.env.DEPLOY_BASE_PATH || '/var/lib/kirby-gen/deployments';
-    this.basePort = parseInt(process.env.DEPLOY_BASE_PORT || '8000', 10);
+  constructor(config?: LocalDeploymentConfig) {
+    this.basePath = config?.basePath || process.env.DEPLOY_BASE_PATH || '/var/lib/kirby-gen/deployments';
+    this.basePort = config?.portStart || parseInt(process.env.DEPLOY_BASE_PORT || '8000', 10);
     this.maxPort = this.basePort + 99; // Allow 100 concurrent deployments
     this.deploymentTimeout = parseInt(process.env.DEPLOY_TIMEOUT || '30000', 10);
 
-    this.ensureBasePath();
+    if (config?.createDirectories) {
+      this.ensureBasePath();
+    }
   }
 
   private async ensureBasePath(): Promise<void> {

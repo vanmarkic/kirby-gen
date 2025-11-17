@@ -21,7 +21,7 @@ const envSchema = z.object({
   LOG_FILE: z.string().optional(),
 
   // CORS
-  CORS_ORIGIN: z.string().default('http://localhost:3000'),
+  CORS_ORIGIN: z.string().default('http://localhost:5176'),
   CORS_CREDENTIALS: z.string().default('true').transform((val) => val === 'true'),
 
   // Rate Limiting
@@ -58,6 +58,13 @@ const envSchema = z.object({
   // WebSocket
   WS_PING_INTERVAL: z.string().default('30000').transform(Number),
   WS_PING_TIMEOUT: z.string().default('60000').transform(Number),
+
+  // Claude AI
+  ANTHROPIC_API_KEY: z.string().optional(),
+  CLAUDE_MODEL: z.string().default('claude-3-5-sonnet-20241022'),
+  CLAUDE_USE_CLI: z.string().default('false').transform((val) => val === 'true'),
+  CLAUDE_CLI_SCRIPT: z.string().default('./scripts/claude-cli.sh'),
+  CLAUDE_CLI_OUTPUT_DIR: z.string().default('./data/claude-output'),
 });
 
 /**

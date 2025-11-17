@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import FileUpload from '../components/FileUpload';
@@ -19,6 +19,19 @@ export default function InputPage() {
     fontFamily: 'Inter',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Redirect to home if projectId is missing
+  useEffect(() => {
+    if (!projectId) {
+      console.error('No project ID provided, redirecting to home');
+      navigate('/', { replace: true });
+    }
+  }, [projectId, navigate]);
+
+  // Don't render if no projectId
+  if (!projectId) {
+    return null;
+  }
 
   const handleSubmit = async () => {
     if (!projectId) return;

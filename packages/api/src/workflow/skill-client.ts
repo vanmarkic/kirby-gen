@@ -55,7 +55,7 @@ export class SkillClient {
 
       clearTimeout(timeoutId);
 
-      const data = await response.json();
+      const data = await response.json() as SkillResponse<TResponse>;
 
       if (!response.ok) {
         throw new SkillError(

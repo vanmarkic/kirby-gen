@@ -87,20 +87,8 @@ export async function cleanupServices(): Promise<void> {
   logger.info('Cleaning up services');
 
   try {
-    // Get deployment service and cleanup any running servers
-    const deploymentService = container.resolve<LocalDeploymentService>(
-      SERVICE_KEYS.DEPLOYMENT
-    );
-
-    // Stop all deployments
-    const deployments = await deploymentService.listDeployments();
-    await Promise.all(
-      deployments.map(async (deployment) => {
-        if (deployment.status === 'running') {
-          await deploymentService.stopDeployment(deployment.id);
-        }
-      })
-    );
+    // TODO: Add deployment cleanup when we have a way to list all deployments
+    // across all projects. Currently listDeployments() requires a projectId.
 
     logger.info('Services cleaned up successfully');
   } catch (error) {

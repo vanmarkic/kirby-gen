@@ -1,8 +1,38 @@
+import { ProjectData } from '../types/project.types';
+
 /**
  * Storage Service Interface
  * Abstracts file storage operations (local file system, S3, etc.)
  */
 export interface IStorageService {
+  /**
+   * Create a new project
+   * @param projectData - Project data
+   * @returns Created project
+   */
+  createProject(projectData: ProjectData): Promise<ProjectData>;
+
+  /**
+   * Get a project by ID
+   * @param projectId - Project ID
+   * @returns Project data or null if not found
+   */
+  getProject(projectId: string): Promise<ProjectData | null>;
+
+  /**
+   * Update a project
+   * @param projectId - Project ID
+   * @param updates - Partial project data to update
+   * @returns Updated project
+   */
+  updateProject(projectId: string, updates: Partial<ProjectData>): Promise<ProjectData>;
+
+  /**
+   * List all projects
+   * @returns Array of projects
+   */
+  listProjects(): Promise<ProjectData[]>;
+
   /**
    * Upload a file to storage
    * @param projectId - Unique project identifier

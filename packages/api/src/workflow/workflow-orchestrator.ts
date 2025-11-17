@@ -310,11 +310,7 @@ export class WorkflowOrchestrator extends EventEmitter {
 
       // Initialize git repository
       this.emitProgress(state, 'in_progress', 75, 'Initializing Git repository...');
-      const gitRepo = await this.gitService.init(outputPath);
-      await this.gitService.commit(
-        outputPath,
-        'Initial commit: Generated portfolio site'
-      );
+      const gitRepo = await this.gitService.createRepo(project.id, true);
 
       // Update project
       project.generated = {
@@ -360,16 +356,13 @@ export class WorkflowOrchestrator extends EventEmitter {
       // Deploy the site
       this.emitProgress(state, 'in_progress', 90, 'Deploying site...');
       const deployment = await this.deploymentService.deploy(
-        project.generated.sitePath,
-        {
-          name: `portfolio-${project.id}`,
-          env: {},
-        }
+        project.id,
+        project.generated.sitePath
       );
 
       // Update project
       project.generated.deploymentUrl = deployment.url;
-      project.generated.deploymentId = deployment.id;
+      project.generated.deploymentId = deployment.deploymentId;
       await this.storageService.updateProject(project.id, project);
 
       state.completedPhases.push(phase);
@@ -386,7 +379,13 @@ export class WorkflowOrchestrator extends EventEmitter {
    * Create workflow context
    */
   private async createContext(projectId: string): Promise<WorkflowContext> {
-    const sessionId = await this.sessionService.createSession(projectId, {});
+    // Get project data to create session
+    const projectData = await this.storageService.getProject(projectId);
+    if (!projectData) {
+      throw new Error(`Project not found: ${projectId}`);
+    }
+
+    const sessionId = await this.sessionService.create(projectId, projectData);
 
     return {
       projectId,

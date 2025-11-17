@@ -104,6 +104,130 @@ describe('Project API Integration Tests', () => {
 
       expect(response.body.data.inputs.pinterestUrl).toBe('https://pinterest.com/test');
     });
+
+    it('should return 404 for non-existent project', async () => {
+      const response = await request(app)
+        .patch('/api/projects/non-existent-id')
+        .send({
+          inputs: {
+            pinterestUrl: 'https://pinterest.com/test',
+          },
+        })
+        .expect(404);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.error.code).toBe('NOT_FOUND');
+    });
+  });
+
+  describe('PUT /api/projects/:projectId', () => {
+    it('should update a project via PUT', async () => {
+      // Create a project
+      const createResponse = await request(app)
+        .post('/api/projects')
+        .expect(201);
+
+      const projectId = createResponse.body.data.id;
+
+      // Update it via PUT
+      const response = await request(app)
+        .put(`/api/projects/${projectId}`)
+        .send({
+          inputs: {
+            pinterestUrl: 'https://pinterest.com/test-put',
+            brandingAssets: {
+              colors: {
+                primary: '#000000',
+                secondary: '#ffffff',
+              },
+            },
+          },
+        })
+        .expect(200);
+
+      expect(response.body.data.inputs.pinterestUrl).toBe('https://pinterest.com/test-put');
+      expect(response.body.data.inputs.brandingAssets.colors).toEqual({
+        primary: '#000000',
+        secondary: '#ffffff',
+      });
+    });
+
+    it('should handle FormData uploads', async () => {
+      // Create a project
+      const createResponse = await request(app)
+        .post('/api/projects')
+        .expect(201);
+
+      const projectId = createResponse.body.data.id;
+
+      // Update with multipart/form-data
+      const response = await request(app)
+        .put(`/api/projects/${projectId}`)
+        .field('branding', JSON.stringify({ primaryColor: '#ff0000' }))
+        .expect(200);
+
+      expect(response.body.success).toBe(true);
+    });
+  });
+
+  describe('DELETE /api/projects/:projectId', () => {
+    it('should delete a project', async () => {
+      // Create a project
+      const createResponse = await request(app)
+        .post('/api/projects')
+        .expect(201);
+
+      const projectId = createResponse.body.data.id;
+
+      // Delete it
+      await request(app)
+        .delete(`/api/projects/${projectId}`)
+        .expect(204);
+
+      // Verify it's gone
+      await request(app)
+        .get(`/api/projects/${projectId}`)
+        .expect(404);
+    });
+
+    it('should return 404 when deleting non-existent project', async () => {
+      await request(app)
+        .delete('/api/projects/non-existent-id')
+        .expect(404);
+    });
+  });
+
+  describe('GET /api/projects/:projectId/status', () => {
+    it('should get project status', async () => {
+      // Create a project
+      const createResponse = await request(app)
+        .post('/api/projects')
+        .expect(201);
+
+      const projectId = createResponse.body.data.id;
+
+      // Get status
+      const response = await request(app)
+        .get(`/api/projects/${projectId}/status`)
+        .expect(200);
+
+      expect(response.body).toMatchObject({
+        success: true,
+        data: expect.objectContaining({
+          id: projectId,
+          status: 'input',
+          currentStep: 0,
+          totalSteps: 5,
+          errors: [],
+        }),
+      });
+    });
+
+    it('should return 404 for non-existent project', async () => {
+      await request(app)
+        .get('/api/projects/non-existent-id/status')
+        .expect(404);
+    });
   });
 
   describe('GET /api/health', () => {

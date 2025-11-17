@@ -10,6 +10,8 @@ import {
   updateProject,
   deleteProject,
   getProjectStatus,
+  initializeDomainMapping,
+  handleDomainMappingMessage,
 } from '../controllers/project.controller';
 import { asyncHandler } from '../middleware/error-handler';
 import { validateParams, validateQuery, validateBody } from '../middleware/validator';
@@ -76,7 +78,15 @@ router.get(
   asyncHandler(getProject)
 );
 
-// PATCH /api/projects/:projectId - Update project
+// PUT/PATCH /api/projects/:projectId - Update project
+router.put(
+  '/:projectId',
+  optionalAuth,
+  validateParams(updateProjectSchema.shape.params),
+  validateBody(updateProjectSchema.shape.body),
+  asyncHandler(updateProject)
+);
+
 router.patch(
   '/:projectId',
   optionalAuth,
@@ -99,6 +109,22 @@ router.get(
   optionalAuth,
   validateParams(projectIdSchema.shape.params),
   asyncHandler(getProjectStatus)
+);
+
+// POST /api/projects/:projectId/domain-mapping/init - Initialize domain mapping
+router.post(
+  '/:projectId/domain-mapping/init',
+  optionalAuth,
+  validateParams(projectIdSchema.shape.params),
+  asyncHandler(initializeDomainMapping)
+);
+
+// POST /api/projects/:projectId/domain-mapping/message - Send message in domain mapping
+router.post(
+  '/:projectId/domain-mapping/message',
+  optionalAuth,
+  validateParams(projectIdSchema.shape.params),
+  asyncHandler(handleDomainMappingMessage)
 );
 
 export default router;

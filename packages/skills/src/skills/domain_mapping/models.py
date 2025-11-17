@@ -3,7 +3,7 @@ Pydantic models for Domain Mapping Skill
 Defines input/output models for the conversational portfolio structure discovery
 """
 
-from typing import Dict, List, Optional, Any, Literal
+from typing import Dict, List, Optional, Any, Literal, Union
 from datetime import datetime
 from pydantic import BaseModel, Field
 from enum import Enum
@@ -100,7 +100,7 @@ class ConversationContext(BaseModel):
 
 # Schema Models (Python equivalent of TypeScript types)
 class FieldChoice(BaseModel):
-    value: str | int
+    value: Union[str, int]
     label: str
     disabled: Optional[bool] = False
 

@@ -267,3 +267,17 @@ export interface ProjectError {
   timestamp: Date;
   phase: ProjectStatus;
 }
+
+/**
+ * Chat message in domain mapping conversation
+ */
+export interface Message {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: string;
+}
+
+/**
+ * Domain schema for visualization (alias for DomainModel)
+ */
+export type DomainSchema = DomainModel;

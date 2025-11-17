@@ -4,17 +4,27 @@ import fs from 'fs/promises';
 import path from 'path';
 import os from 'os';
 
+export interface LocalGitConfig {
+  userName?: string;
+  userEmail?: string;
+  basePath?: string;
+}
+
 /**
  * Local Git Service implementation using simple-git
  * Stores repositories in a configurable base path
  */
 export class LocalGitService implements IGitService {
   private basePath: string;
+  private userName: string;
+  private userEmail: string;
 
-  constructor() {
+  constructor(config?: LocalGitConfig) {
     // Use environment variable or default to a path in the user's home directory
-    this.basePath = process.env.GIT_BASE_PATH ||
+    this.basePath = config?.basePath || process.env.GIT_BASE_PATH ||
       path.join(os.homedir(), '.kirby-gen-repos');
+    this.userName = config?.userName || 'Kirby Gen';
+    this.userEmail = config?.userEmail || 'noreply@kirby-gen.local';
   }
 
   /**

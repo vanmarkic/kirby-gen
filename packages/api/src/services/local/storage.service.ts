@@ -2,6 +2,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { constants } from 'fs';
 import { IStorageService, FileMetadata } from '../../../../shared/src/interfaces/storage.interface';
+import { ProjectData } from '../../../../shared/src/types/project.types';
 import * as crypto from 'crypto';
 
 /**
@@ -9,12 +10,24 @@ import * as crypto from 'crypto';
  * Stores files in a directory structure: {basePath}/{projectId}/{filename}
  * Metadata is stored alongside files as {filename}.meta.json
  */
+export interface LocalStorageConfig {
+  basePath: string;
+  createDirectories?: boolean;
+}
+
 export class LocalStorageService implements IStorageService {
   private readonly basePath: string;
   private readonly uploadLocks: Map<string, Promise<void>> = new Map();
 
-  constructor() {
-    this.basePath = process.env.STORAGE_PATH || path.join(process.cwd(), 'storage');
+  constructor(config?: LocalStorageConfig) {
+    this.basePath = config?.basePath || process.env.STORAGE_PATH || path.join(process.cwd(), 'storage');
+
+    // Create base directory if requested
+    if (config?.createDirectories) {
+      fs.mkdir(this.basePath, { recursive: true }).catch(err => {
+        console.error(`Failed to create storage directory: ${err.message}`);
+      });
+    }
   }
 
   /**
@@ -336,6 +349,137 @@ export class LocalStorageService implements IStorageService {
         throw new Error('Metadata not found');
       }
       throw new Error(`Failed to get file metadata: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get the project metadata file path
+   */
+  private getProjectMetadataPath(projectId: string): string {
+    this.validateProjectId(projectId);
+    return path.join(this.basePath, projectId, '_project.json');
+  }
+
+  /**
+   * Create a new project
+   */
+  async createProject(projectData: ProjectData): Promise<ProjectData> {
+    this.validateProjectId(projectData.id);
+
+    const projectPath = path.join(this.basePath, projectData.id);
+    const metadataPath = this.getProjectMetadataPath(projectData.id);
+
+    try {
+      // Create project directory
+      await fs.mkdir(projectPath, { recursive: true });
+
+      // Save project metadata
+      await fs.writeFile(metadataPath, JSON.stringify(projectData, null, 2), 'utf-8');
+
+      return projectData;
+    } catch (error: any) {
+      if (error.message?.includes('Invalid')) {
+        throw error;
+      }
+      throw new Error(`Failed to create project: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get project metadata
+   */
+  async getProject(projectId: string): Promise<ProjectData | null> {
+    this.validateProjectId(projectId);
+
+    const metadataPath = this.getProjectMetadataPath(projectId);
+
+    try {
+      const content = await fs.readFile(metadataPath, 'utf-8');
+      const projectData = JSON.parse(content);
+
+      // Convert date strings back to Date objects
+      projectData.createdAt = new Date(projectData.createdAt);
+      projectData.updatedAt = new Date(projectData.updatedAt);
+
+      return projectData as ProjectData;
+    } catch (error: any) {
+      if (error.message?.includes('Invalid')) {
+        throw error;
+      }
+      if (error.code === 'ENOENT') {
+        return null;
+      }
+      throw new Error(`Failed to get project: ${error.message}`);
+    }
+  }
+
+  /**
+   * Update project metadata
+   */
+  async updateProject(projectId: string, updates: Partial<ProjectData>): Promise<ProjectData> {
+    this.validateProjectId(projectId);
+
+    const existingProject = await this.getProject(projectId);
+
+    if (!existingProject) {
+      throw new Error(`Project not found: ${projectId}`);
+    }
+
+    // Merge updates
+    const updatedProject: ProjectData = {
+      ...existingProject,
+      ...updates,
+      id: existingProject.id, // Prevent ID change
+      createdAt: existingProject.createdAt, // Prevent creation date change
+      updatedAt: new Date(),
+    };
+
+    const metadataPath = this.getProjectMetadataPath(projectId);
+
+    try {
+      await fs.writeFile(metadataPath, JSON.stringify(updatedProject, null, 2), 'utf-8');
+      return updatedProject;
+    } catch (error: any) {
+      if (error.message?.includes('Invalid')) {
+        throw error;
+      }
+      throw new Error(`Failed to update project: ${error.message}`);
+    }
+  }
+
+  /**
+   * List all projects
+   */
+  async listProjects(): Promise<ProjectData[]> {
+    const projects: ProjectData[] = [];
+
+    try {
+      const entries = await fs.readdir(this.basePath, { withFileTypes: true });
+
+      for (const entry of entries) {
+        if (entry.isDirectory()) {
+          try {
+            const project = await this.getProject(entry.name);
+            if (project) {
+              projects.push(project);
+            }
+          } catch {
+            // Skip directories without valid project metadata
+            continue;
+          }
+        }
+      }
+
+      // Sort by creation date (newest first)
+      return projects.sort((a, b) =>
+        b.createdAt.getTime() - a.createdAt.getTime()
+      );
+    } catch (error: any) {
+      if (error.code === 'ENOENT') {
+        // Base directory doesn't exist, return empty array
+        return [];
+      }
+      throw new Error(`Failed to list projects: ${error.message}`);
     }
   }
 }

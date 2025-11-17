@@ -5,17 +5,17 @@ import type { Project, DomainSchema, Message } from '@kirby-gen/shared';
 export const projectEndpoints = {
   create: async (data: { name: string }): Promise<Project> => {
     const response = await apiClient.post('/projects', data);
-    return response.data;
+    return response.data.data;
   },
 
   get: async (id: string): Promise<Project> => {
     const response = await apiClient.get(`/projects/${id}`);
-    return response.data;
+    return response.data.data;
   },
 
   list: async (): Promise<Project[]> => {
     const response = await apiClient.get('/projects');
-    return response.data;
+    return response.data.data;
   },
 
   update: async (id: string, data: FormData): Promise<Project> => {
@@ -24,7 +24,7 @@ export const projectEndpoints = {
         'Content-Type': 'multipart/form-data',
       },
     });
-    return response.data;
+    return response.data.data;
   },
 
   delete: async (id: string): Promise<void> => {
@@ -37,14 +37,14 @@ export const projectEndpoints = {
 
   getPreviewUrl: async (id: string): Promise<{ url: string }> => {
     const response = await apiClient.get(`/projects/${id}/preview-url`);
-    return response.data;
+    return response.data.data;
   },
 
   download: async (id: string): Promise<Blob> => {
     const response = await apiClient.get(`/projects/${id}/download`, {
       responseType: 'blob',
     });
-    return response.data;
+    return response.data; // Blob responses don't have wrapper
   },
 };
 
@@ -56,7 +56,7 @@ export const domainMappingEndpoints = {
     const response = await apiClient.post(
       `/projects/${projectId}/domain-mapping/init`
     );
-    return response.data;
+    return response.data.data;
   },
 
   sendMessage: async (
@@ -74,14 +74,14 @@ export const domainMappingEndpoints = {
       `/projects/${projectId}/domain-mapping/message`,
       data
     );
-    return response.data;
+    return response.data.data;
   },
 
   getSchema: async (projectId: string): Promise<DomainSchema> => {
     const response = await apiClient.get(
       `/projects/${projectId}/domain-mapping/schema`
     );
-    return response.data;
+    return response.data.data;
   },
 };
 

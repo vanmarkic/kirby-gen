@@ -15,7 +15,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './',
-  testMatch: '**/playwright-e2e.test.ts',
+  testMatch: ['**/playwright-e2e.test.ts', '**/happy-path.test.ts'],
 
   /* Run tests in files in parallel */
   fullyParallel: false,
@@ -38,7 +38,7 @@ export default defineConfig({
   /* Shared settings for all the projects below */
   use: {
     /* Base URL to use in actions like `await page.goto('/')` */
-    baseURL: 'http://localhost:5173',
+    baseURL: 'http://localhost:5176',
 
     /* Collect trace when retrying the failed test */
     trace: 'on-first-retry',
@@ -82,7 +82,7 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: 'npm run dev:web',
-    url: 'http://localhost:5173',
+    url: 'http://localhost:5176',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
   },
