@@ -1,0 +1,271 @@
+{
+  "entities": [
+    {
+      "id": "page",
+      "name": "Page",
+      "pluralName": "Pages",
+      "description": "Standard content pages like About, Contact",
+      "icon": "page",
+      "color": "#3b82f6",
+      "fields": [
+        {
+          "id": "title",
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true,
+          "validation": {
+            "max": 100
+          }
+        },
+        {
+          "id": "content",
+          "name": "content",
+          "label": "Content",
+          "type": "blocks",
+          "required": true
+        },
+        {
+          "id": "seo_description",
+          "name": "seoDescription",
+          "label": "SEO Description",
+          "type": "textarea",
+          "required": false,
+          "validation": {
+            "max": 160
+          }
+        }
+      ]
+    },
+    {
+      "id": "project",
+      "name": "Project",
+      "pluralName": "Projects",
+      "description": "Portfolio projects and case studies",
+      "icon": "code",
+      "color": "#8b5cf6",
+      "fields": [
+        {
+          "id": "title",
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "description",
+          "name": "description",
+          "label": "Description",
+          "type": "textarea",
+          "required": true,
+          "validation": {
+            "max": 500
+          }
+        },
+        {
+          "id": "role",
+          "name": "role",
+          "label": "Role",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "year",
+          "name": "year",
+          "label": "Year",
+          "type": "number",
+          "required": true,
+          "validation": {
+            "min": 2000,
+            "max": 2030
+          }
+        },
+        {
+          "id": "technologies",
+          "name": "technologies",
+          "label": "Technologies",
+          "type": "tags",
+          "required": false
+        },
+        {
+          "id": "challenge",
+          "name": "challenge",
+          "label": "Challenge",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "id": "solution",
+          "name": "solution",
+          "label": "Solution",
+          "type": "markdown",
+          "required": false
+        },
+        {
+          "id": "results",
+          "name": "results",
+          "label": "Results",
+          "type": "markdown",
+          "required": false
+        },
+        {
+          "id": "featured_image",
+          "name": "featuredImage",
+          "label": "Featured Image",
+          "type": "image",
+          "required": false
+        },
+        {
+          "id": "gallery",
+          "name": "gallery",
+          "label": "Gallery",
+          "type": "gallery",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "blog_post",
+      "name": "BlogPost",
+      "pluralName": "BlogPosts",
+      "description": "Blog articles and posts",
+      "icon": "text",
+      "color": "#10b981",
+      "fields": [
+        {
+          "id": "title",
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "published_date",
+          "name": "publishedDate",
+          "label": "Published Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "id": "category",
+          "name": "category",
+          "label": "Category",
+          "type": "select",
+          "required": true,
+          "options": {
+            "choices": ["Design", "Development", "Workflow"]
+          }
+        },
+        {
+          "id": "reading_time",
+          "name": "readingTime",
+          "label": "Reading Time (minutes)",
+          "type": "number",
+          "required": false
+        },
+        {
+          "id": "excerpt",
+          "name": "excerpt",
+          "label": "Excerpt",
+          "type": "textarea",
+          "required": true,
+          "validation": {
+            "max": 300
+          }
+        },
+        {
+          "id": "content",
+          "name": "content",
+          "label": "Content",
+          "type": "markdown",
+          "required": true
+        },
+        {
+          "id": "featured_image",
+          "name": "featuredImage",
+          "label": "Featured Image",
+          "type": "image",
+          "required": false
+        },
+        {
+          "id": "tags",
+          "name": "tags",
+          "label": "Tags",
+          "type": "tags",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "id": "project_blog_posts",
+      "type": "one-to-many",
+      "from": "project",
+      "to": "blog_post",
+      "label": "Related Blog Posts",
+      "inversLabel": "Related Project"
+    }
+  ],
+  "schema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "pages": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Page"
+        }
+      },
+      "projects": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Project"
+        }
+      },
+      "blogPosts": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/BlogPost"
+        }
+      }
+    },
+    "definitions": {
+      "Page": {
+        "type": "object",
+        "required": ["title", "content"],
+        "properties": {
+          "title": { "type": "string" },
+          "content": { "type": "string" },
+          "seoDescription": { "type": "string" }
+        }
+      },
+      "Project": {
+        "type": "object",
+        "required": ["title", "description", "role", "year"],
+        "properties": {
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "role": { "type": "string" },
+          "year": { "type": "number" },
+          "technologies": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "BlogPost": {
+        "type": "object",
+        "required": ["title", "publishedDate", "category", "excerpt", "content"],
+        "properties": {
+          "title": { "type": "string" },
+          "publishedDate": { "type": "string", "format": "date" },
+          "category": { "type": "string" },
+          "readingTime": { "type": "number" },
+          "excerpt": { "type": "string" },
+          "content": { "type": "string" }
+        }
+      }
+    }
+  }
+}

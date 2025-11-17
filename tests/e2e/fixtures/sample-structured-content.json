@@ -1,0 +1,214 @@
+{
+  "page": [
+    {
+      "id": "page_about",
+      "entityType": "page",
+      "title": "About Me",
+      "slug": "about",
+      "fields": {
+        "title": "About Me",
+        "content": "I'm a creative designer and developer with over 8 years of experience creating beautiful, user-centered digital experiences.",
+        "seoDescription": "Learn about my experience in design and development, my approach to creating digital experiences, and how we can work together."
+      },
+      "metadata": {
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z",
+        "source": "about.md",
+        "status": "published"
+      }
+    },
+    {
+      "id": "page_contact",
+      "entityType": "page",
+      "title": "Contact",
+      "slug": "contact",
+      "fields": {
+        "title": "Get In Touch",
+        "content": "I'm always interested in hearing about new projects and opportunities.",
+        "seoDescription": "Get in touch for freelance projects, design consulting, speaking engagements, or mentorship opportunities."
+      },
+      "metadata": {
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z",
+        "source": "contact.md",
+        "status": "published"
+      }
+    }
+  ],
+  "project": [
+    {
+      "id": "project_ecommerce",
+      "entityType": "project",
+      "title": "E-Commerce Platform Redesign",
+      "slug": "ecommerce-platform-redesign",
+      "fields": {
+        "title": "E-Commerce Platform Redesign",
+        "description": "A complete redesign of a major e-commerce platform serving over 1M users.",
+        "role": "Lead Designer",
+        "year": 2023,
+        "technologies": ["Figma", "React", "TypeScript", "Tailwind CSS"],
+        "challenge": "The existing platform had outdated UX patterns and poor mobile experience, resulting in high cart abandonment rates.",
+        "solution": "Conducted extensive user research and usability testing, redesigned the entire checkout flow, implemented progressive enhancement for mobile, and created a comprehensive design system.",
+        "results": "35% reduction in cart abandonment, 50% improvement in mobile conversion rates, 90% positive user feedback"
+      },
+      "metadata": {
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z",
+        "source": "projects.md",
+        "status": "published"
+      }
+    },
+    {
+      "id": "project_ai_platform",
+      "entityType": "project",
+      "title": "AI-Powered Content Platform",
+      "slug": "ai-powered-content-platform",
+      "fields": {
+        "title": "AI-Powered Content Platform",
+        "description": "Built a next-generation content management system with AI-assisted writing tools.",
+        "role": "Product Designer & Frontend Developer",
+        "year": 2023,
+        "technologies": ["Next.js", "OpenAI API", "PostgreSQL", "Tailwind"],
+        "challenge": "Content teams needed better tools for collaboration and productivity.",
+        "solution": "Built a platform with real-time collaborative editing, AI-powered content suggestions, advanced analytics dashboard, and multi-language support.",
+        "results": "Increased content team productivity by 40% and reduced time-to-publish by 60%"
+      },
+      "metadata": {
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z",
+        "source": "projects.md",
+        "status": "published"
+      }
+    },
+    {
+      "id": "project_design_system",
+      "entityType": "project",
+      "title": "Design System for Enterprise SaaS",
+      "slug": "design-system-enterprise-saas",
+      "fields": {
+        "title": "Design System for Enterprise SaaS",
+        "description": "Created a comprehensive design system used across 15+ products.",
+        "role": "Design System Lead",
+        "year": 2022,
+        "technologies": ["Figma", "React", "Storybook", "TypeScript"],
+        "challenge": "Multiple product teams needed a consistent design language.",
+        "solution": "Built 100+ reusable components with complete documentation, accessibility guidelines (WCAG 2.1 AAA), and dark mode support.",
+        "results": "Adopted by 12 product teams, reducing design-to-development time by 50%"
+      },
+      "metadata": {
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z",
+        "source": "projects.md",
+        "status": "published"
+      }
+    },
+    {
+      "id": "project_mobile_banking",
+      "entityType": "project",
+      "title": "Mobile Banking App",
+      "slug": "mobile-banking-app",
+      "fields": {
+        "title": "Mobile Banking App",
+        "description": "Designed and developed a mobile-first banking application.",
+        "role": "UX/UI Designer",
+        "year": 2021,
+        "technologies": ["React Native", "Node.js", "MongoDB"],
+        "challenge": "Creating a secure and user-friendly mobile banking experience.",
+        "solution": "Implemented biometric authentication, real-time transaction notifications, budget tracking and insights, and multi-currency support.",
+        "results": "Winner of 'Best Mobile Banking App' at FinTech Awards 2021"
+      },
+      "metadata": {
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z",
+        "source": "projects.md",
+        "status": "published"
+      }
+    }
+  ],
+  "blog_post": [
+    {
+      "id": "blog_design_systems",
+      "entityType": "blog_post",
+      "title": "The Future of Design Systems",
+      "slug": "future-of-design-systems",
+      "fields": {
+        "title": "The Future of Design Systems",
+        "publishedDate": "2023-10-15",
+        "category": "Design",
+        "readingTime": 8,
+        "excerpt": "Design systems have evolved from simple style guides to comprehensive ecosystems that power entire product suites. In this post, I explore where design systems are heading and how AI and automation will shape their future.",
+        "content": "Design systems have evolved from simple style guides to comprehensive ecosystems...",
+        "tags": ["design-systems", "tokens", "automation", "ai"]
+      },
+      "metadata": {
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z",
+        "source": "blog-posts.md",
+        "status": "published"
+      }
+    },
+    {
+      "id": "blog_accessibility",
+      "entityType": "blog_post",
+      "title": "Building Accessible Web Applications",
+      "slug": "building-accessible-web-applications",
+      "fields": {
+        "title": "Building Accessible Web Applications",
+        "publishedDate": "2023-09-22",
+        "category": "Development",
+        "readingTime": 12,
+        "excerpt": "Accessibility isn't just a feature—it's a fundamental requirement. This comprehensive guide covers practical techniques for building web applications that work for everyone.",
+        "content": "Accessibility isn't just a feature—it's a fundamental requirement...",
+        "tags": ["accessibility", "wcag", "a11y", "development"]
+      },
+      "metadata": {
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z",
+        "source": "blog-posts.md",
+        "status": "published"
+      }
+    },
+    {
+      "id": "blog_figma_workflow",
+      "entityType": "blog_post",
+      "title": "From Figma to Code: Streamlining Your Workflow",
+      "slug": "figma-to-code-workflow",
+      "fields": {
+        "title": "From Figma to Code: Streamlining Your Workflow",
+        "publishedDate": "2023-08-10",
+        "category": "Workflow",
+        "readingTime": 6,
+        "excerpt": "Learn how to optimize the handoff between design and development with modern tools and techniques.",
+        "content": "Learn how to optimize the handoff between design and development...",
+        "tags": ["figma", "workflow", "design-tokens", "collaboration"]
+      },
+      "metadata": {
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z",
+        "source": "blog-posts.md",
+        "status": "published"
+      }
+    },
+    {
+      "id": "blog_minimalism",
+      "entityType": "blog_post",
+      "title": "The Art of Minimalist UI Design",
+      "slug": "art-of-minimalist-ui-design",
+      "fields": {
+        "title": "The Art of Minimalist UI Design",
+        "publishedDate": "2023-07-05",
+        "category": "Design",
+        "readingTime": 5,
+        "excerpt": "Minimalism in UI design isn't about removing elements—it's about prioritizing what matters most to your users.",
+        "content": "Minimalism in UI design isn't about removing elements...",
+        "tags": ["minimalism", "ui-design", "visual-hierarchy", "typography"]
+      },
+      "metadata": {
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z",
+        "source": "blog-posts.md",
+        "status": "published"
+      }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+# Content Structuring Skill Requirements
+# Python dependencies for processing various file formats
+
+# Core dependencies
+anthropic>=0.18.0
+pydantic>=2.0.0
+
+# Document processing
+python-docx>=0.8.11  # For DOCX file parsing
+PyPDF2>=3.0.0       # For PDF file parsing
+markdown>=3.4.0     # For Markdown parsing with extensions
+
+# Image processing
+Pillow>=10.0.0      # For image metadata extraction
+
+# Additional utilities
+python-dateutil>=2.8.2  # For date parsing
+chardet>=5.0.0         # For encoding detection
+python-magic>=0.4.27   # For better MIME type detection (optional)
+
+# Development dependencies (optional)
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-mock>=3.11.0
+black>=23.0.0
+mypy>=1.5.0

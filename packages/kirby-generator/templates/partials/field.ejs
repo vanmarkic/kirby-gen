@@ -1,0 +1,27 @@
+      <?php if ($page-><%= field.name %>()->isNotEmpty()): ?>
+        <div class="field field-<%= field.name %>">
+<% if (field.type === 'text' || field.type === 'textarea') { %>
+          <h2 class="field-label"><?= $page-><%= field.name %>() ?></h2>
+<% } else if (field.type === 'richtext' || field.type === 'markdown') { %>
+          <?= $page-><%= field.name %>()->kirbytext() ?>
+<% } else if (field.type === 'blocks') { %>
+          <?= $page-><%= field.name %>()->toBlocks() ?>
+<% } else if (field.type === 'image') { %>
+          <?php if ($image = $page-><%= field.name %>()->toFile()): ?>
+            <figure>
+              <img src="<?= $image->url() ?>" alt="<?= $image->alt() ?>">
+            </figure>
+          <?php endif ?>
+<% } else if (field.type === 'gallery') { %>
+          <div class="gallery">
+            <?php foreach ($page-><%= field.name %>()->toFiles() as $image): ?>
+              <figure>
+                <img src="<?= $image->url() ?>" alt="<?= $image->alt() ?>">
+              </figure>
+            <?php endforeach ?>
+          </div>
+<% } else { %>
+          <?= $page-><%= field.name %>() ?>
+<% } %>
+        </div>
+      <?php endif ?>
