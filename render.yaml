@@ -1,0 +1,219 @@
+# Render Blueprint for Kirby-Gen Portfolio Generator
+# Deploys all services needed for production
+
+services:
+  # ==========================================
+  # Frontend - Static Site
+  # ==========================================
+  - type: web
+    name: kirby-gen-web
+    runtime: static
+    repo: https://github.com/vanmarkic/kirby-gen  # Update with your repo
+    branch: main
+    buildCommand: cd packages/web && npm install && npm run build
+    staticPublishPath: packages/web/dist
+    pullRequestPreviewsEnabled: true
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+    envVars:
+      - key: VITE_API_URL
+        value: https://kirby-gen-api.onrender.com  # Update with your API URL
+      - key: VITE_WS_URL
+        value: wss://kirby-gen-api.onrender.com    # Update with your API URL
+
+  # ==========================================
+  # API Backend - Express + Socket.IO
+  # ==========================================
+  - type: web
+    name: kirby-gen-api
+    runtime: node
+    plan: standard  # $25/month - 2GB RAM, 1 CPU
+    repo: https://github.com/vanmarkic/kirby-gen  # Update with your repo
+    branch: main
+    buildCommand: npm install && cd packages/api && npm install && npm run build
+    startCommand: cd packages/api && npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    numInstances: 1
+    scaling:
+      minInstances: 1
+      maxInstances: 3
+      targetMemoryPercent: 80
+      targetCPUPercent: 70
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+
+      # Database
+      - key: DATABASE_URL
+        fromDatabase:
+          name: kirby-gen-db
+          property: connectionString
+
+      # Redis
+      - key: REDIS_URL
+        fromDatabase:
+          name: kirby-gen-redis
+          property: connectionString
+
+      # Claude API (Set manually in Render Dashboard)
+      - key: CLAUDE_API_KEY
+        sync: false
+      - key: CLAUDE_MODEL
+        value: claude-opus-4-20250514
+
+      # S3 Storage (Set manually in Render Dashboard)
+      - key: STORAGE_TYPE
+        value: s3
+      - key: S3_ENDPOINT
+        sync: false  # e.g., https://nyc3.digitaloceanspaces.com
+      - key: S3_BUCKET
+        sync: false  # e.g., kirby-gen-storage
+      - key: S3_REGION
+        value: us-east-1
+      - key: S3_ACCESS_KEY_ID
+        sync: false
+      - key: S3_SECRET_ACCESS_KEY
+        sync: false
+
+      # Skills Service URL (auto-populated)
+      - key: SKILLS_BASE_URL
+        fromService:
+          name: kirby-gen-skills
+          type: pserv
+          property: url
+
+      # Security (auto-generated)
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SESSION_SECRET
+        generateValue: true
+
+      # Deployment
+      - key: DEPLOY_TYPE
+        value: render
+      - key: RENDER_API_KEY
+        sync: false  # Optional: for programmatic deployments
+
+      # Logging
+      - key: LOG_LEVEL
+        value: info
+      - key: LOG_FORMAT
+        value: json
+
+      # Rate Limiting
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 60000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+
+      # File Upload
+      - key: MAX_FILE_SIZE_MB
+        value: 100
+
+  # ==========================================
+  # Python Skills API - Private Service
+  # ==========================================
+  - type: pserv
+    name: kirby-gen-skills
+    runtime: python
+    plan: starter  # $7/month - 512MB RAM, 0.5 CPU
+    repo: https://github.com/vanmarkic/kirby-gen  # Update with your repo
+    branch: main
+    buildCommand: cd packages/skills && pip install -r requirements.txt
+    startCommand: cd packages/skills && uvicorn src.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # Claude API (Set manually in Render Dashboard)
+      - key: ANTHROPIC_API_KEY
+        sync: false
+
+      # Logging
+      - key: LOG_LEVEL
+        value: info
+
+  # ==========================================
+  # Background Worker - Generation Queue
+  # ==========================================
+  - type: worker
+    name: kirby-gen-worker
+    runtime: node
+    plan: standard  # $25/month - 2GB RAM, 1 CPU
+    repo: https://github.com/vanmarkic/kirby-gen  # Update with your repo
+    branch: main
+    buildCommand: npm install && cd packages/api && npm install && npm run build
+    startCommand: cd packages/api && npm run worker
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      # Database
+      - key: DATABASE_URL
+        fromDatabase:
+          name: kirby-gen-db
+          property: connectionString
+
+      # Redis
+      - key: REDIS_URL
+        fromDatabase:
+          name: kirby-gen-redis
+          property: connectionString
+
+      # Claude API
+      - key: CLAUDE_API_KEY
+        sync: false
+      - key: CLAUDE_MODEL
+        value: claude-opus-4-20250514
+
+      # S3 Storage
+      - key: STORAGE_TYPE
+        value: s3
+      - key: S3_ENDPOINT
+        sync: false
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_REGION
+        value: us-east-1
+      - key: S3_ACCESS_KEY_ID
+        sync: false
+      - key: S3_SECRET_ACCESS_KEY
+        sync: false
+
+      # Skills Service URL
+      - key: SKILLS_BASE_URL
+        fromService:
+          name: kirby-gen-skills
+          type: pserv
+          property: url
+
+      # Logging
+      - key: LOG_LEVEL
+        value: info
+      - key: LOG_FORMAT
+        value: json
+
+# ==========================================
+# Databases
+# ==========================================
+databases:
+  # PostgreSQL Database
+  - name: kirby-gen-db
+    databaseName: kirby_gen
+    user: kirby_gen_user
+    plan: standard  # $15/month - 1GB RAM, 0.5 CPU, 10GB storage
+    ipAllowList: []  # Empty = allow from all Render services
+
+  # Redis Cache
+  - name: kirby-gen-redis
+    plan: standard  # $15/month - 100MB RAM
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []  # Empty = allow from all Render services
