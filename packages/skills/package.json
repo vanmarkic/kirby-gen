@@ -1,0 +1,17 @@
+{
+  "name": "@kirby-gen/skills",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Claude skills for Kirby-gen",
+  "scripts": {
+    "dev": "uvicorn src.main:app --reload --port 8001",
+    "test": "pytest tests/ -v --cov=src",
+    "test:unit": "pytest tests/unit/ -v --cov=src",
+    "test:integration": "pytest tests/integration/ -v",
+    "test:watch": "pytest-watch",
+    "lint": "ruff check src tests",
+    "format": "black src tests",
+    "typecheck": "mypy src",
+    "setup": "python -m venv venv && . venv/bin/activate && pip install -r requirements.txt"
+  }
+}
