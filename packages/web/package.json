@@ -1,0 +1,49 @@
+{
+  "name": "@kirby-gen/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Web interface for Kirby-gen",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:unit": "vitest run --dir src",
+    "test:watch": "vitest",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@kirby-gen/shared": "*",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@tanstack/react-query": "^5.17.9",
+    "zustand": "^4.4.7",
+    "socket.io-client": "^4.6.1",
+    "react-router-dom": "^6.21.1",
+    "zod": "^3.22.4",
+    "axios": "^1.6.5",
+    "react-dropzone": "^14.2.3",
+    "clsx": "^2.1.0",
+    "lucide-react": "^0.303.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.47",
+    "@types/react-dom": "^18.2.18",
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "@typescript-eslint/parser": "^6.17.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "@vitest/ui": "^1.1.3",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "jsdom": "^23.2.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11",
+    "vitest": "^1.1.3",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/jest-dom": "^6.2.0",
+    "@testing-library/user-event": "^14.5.1"
+  }
+}
