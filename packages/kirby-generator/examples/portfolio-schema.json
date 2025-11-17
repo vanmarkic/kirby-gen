@@ -1,0 +1,184 @@
+{
+  "version": "1.0.0",
+  "entities": [
+    {
+      "id": "project",
+      "name": "Project",
+      "pluralName": "Projects",
+      "description": "Portfolio projects showcasing work",
+      "fields": [
+        {
+          "id": "title",
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true,
+          "helpText": "Project title",
+          "placeholder": "My Amazing Project"
+        },
+        {
+          "id": "slug",
+          "name": "slug",
+          "label": "Slug",
+          "type": "text",
+          "required": true,
+          "helpText": "URL-friendly identifier",
+          "validation": {
+            "pattern": "^[a-z0-9-]+$"
+          }
+        },
+        {
+          "id": "excerpt",
+          "name": "excerpt",
+          "label": "Excerpt",
+          "type": "textarea",
+          "required": false,
+          "options": {
+            "maxLength": 200
+          },
+          "helpText": "Brief description for listings"
+        },
+        {
+          "id": "description",
+          "name": "description",
+          "label": "Description",
+          "type": "richtext",
+          "required": false,
+          "helpText": "Full project description"
+        },
+        {
+          "id": "coverImage",
+          "name": "coverImage",
+          "label": "Cover Image",
+          "type": "image",
+          "required": false,
+          "options": {
+            "accept": ["image/jpeg", "image/png", "image/webp"],
+            "maxSize": 5242880
+          }
+        },
+        {
+          "id": "gallery",
+          "name": "gallery",
+          "label": "Gallery",
+          "type": "gallery",
+          "required": false,
+          "options": {
+            "maxFiles": 10
+          }
+        },
+        {
+          "id": "client",
+          "name": "client",
+          "label": "Client",
+          "type": "text",
+          "required": false,
+          "width": "half"
+        },
+        {
+          "id": "year",
+          "name": "year",
+          "label": "Year",
+          "type": "number",
+          "required": false,
+          "width": "half",
+          "options": {
+            "min": 2000,
+            "max": 2030
+          }
+        },
+        {
+          "id": "technologies",
+          "name": "technologies",
+          "label": "Technologies",
+          "type": "tags",
+          "required": false,
+          "helpText": "Tech stack used"
+        },
+        {
+          "id": "featured",
+          "name": "featured",
+          "label": "Featured",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "id": "url",
+          "name": "url",
+          "label": "Project URL",
+          "type": "url",
+          "required": false,
+          "placeholder": "https://example.com"
+        }
+      ],
+      "sortable": true,
+      "icon": "folder",
+      "color": "#0066ff",
+      "displayField": "title",
+      "slugSource": "title"
+    },
+    {
+      "id": "testimonial",
+      "name": "Testimonial",
+      "pluralName": "Testimonials",
+      "description": "Client testimonials",
+      "fields": [
+        {
+          "id": "quote",
+          "name": "quote",
+          "label": "Quote",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "id": "author",
+          "name": "author",
+          "label": "Author",
+          "type": "text",
+          "required": true,
+          "width": "half"
+        },
+        {
+          "id": "role",
+          "name": "role",
+          "label": "Role",
+          "type": "text",
+          "required": false,
+          "width": "half"
+        },
+        {
+          "id": "company",
+          "name": "company",
+          "label": "Company",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "avatar",
+          "name": "avatar",
+          "label": "Avatar",
+          "type": "image",
+          "required": false
+        }
+      ],
+      "icon": "quote",
+      "displayField": "author"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "project-testimonials",
+      "type": "one-to-many",
+      "from": "project",
+      "to": "testimonial",
+      "label": "Testimonials"
+    }
+  ],
+  "metadata": {
+    "name": "Portfolio Schema",
+    "description": "Schema for portfolio site",
+    "author": "Kirby Gen",
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  }
+}

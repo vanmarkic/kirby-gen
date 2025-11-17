@@ -1,0 +1,120 @@
+title: Project
+icon: folder
+num: num
+status:
+  draft:
+    label: Draft
+    text: This page is in draft mode
+  listed:
+    label: Published
+    text: This page is published and visible
+  unlisted:
+    label: Unlisted
+    text: This page is published but not listed
+options:
+  changeSlug: true
+  changeStatus: true
+  changeTemplate: false
+  delete: true
+  duplicate: true
+  preview: true
+  read: true
+  update: true
+tabs:
+  content:
+    label: Content
+    icon: text
+    columns:
+      - width: "1/2"
+        sections:
+          main:
+            type: fields
+            fields:
+              title:
+                label: Title
+                type: text
+                required: true
+                help: Project title
+                placeholder: My Amazing Project
+                translate: true
+              slug:
+                label: Slug
+                type: text
+                required: true
+                help: URL-friendly identifier
+                pattern: "^[a-z0-9-]+$"
+                translate: true
+              excerpt:
+                label: Excerpt
+                type: textarea
+                help: Brief description for listings
+                maxlength: 200
+                translate: true
+              description:
+                label: Description
+                type: writer
+                help: Full project description
+                translate: true
+              client:
+                label: Client
+                type: text
+                width: "1/2"
+                translate: true
+              year:
+                label: Year
+                type: number
+                width: "1/2"
+                min: 2000
+                max: 2030
+                translate: true
+      - width: "1/2"
+        sections:
+          secondary:
+            type: fields
+            fields:
+              technologies:
+                label: Technologies
+                type: tags
+                help: Tech stack used
+                translate: true
+              featured:
+                label: Featured
+                type: toggle
+                translate: true
+              url:
+                label: Project URL
+                type: url
+                placeholder: "https://example.com"
+                translate: true
+  media:
+    label: Media
+    icon: image
+    columns:
+      - width: "1/1"
+        sections:
+          main:
+            type: fields
+            fields:
+              coverImage:
+                label: Cover Image
+                type: files
+                query: page.images
+                max: 1
+                accept: "image/jpeg,image/png,image/webp"
+                max_size: 5120
+                translate: true
+              gallery:
+                label: Gallery
+                type: files
+                query: page.images
+                max: 10
+                translate: true
+  settings:
+    label: Settings
+    icon: cog
+    fields:
+      slug:
+        label: Slug
+        type: text
+        help: URL-friendly identifier
+        icon: url

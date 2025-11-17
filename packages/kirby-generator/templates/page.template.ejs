@@ -1,0 +1,21 @@
+<?php
+/**
+ * Template: <%= entityName %>
+ * <%= description %>
+ */
+?>
+<?php snippet('header') ?>
+
+<main class="page-content">
+  <article class="<%= templateClass %>">
+    <?php snippet('page-header', ['page' => $page]) ?>
+
+    <div class="page-body">
+<% fields.forEach(function(field) { %>
+      <%- include('partials/field', { field: field }) %>
+<% }); %>
+    </div>
+  </article>
+</main>
+
+<?php snippet('footer') ?>

@@ -1,0 +1,26 @@
+Title: My Portfolio Website
+
+Slug: my-portfolio-website
+
+Excerpt: A modern, responsive portfolio website built with cutting-edge technologies
+
+Description:
+
+This portfolio website showcases my work as a web developer and designer. Built with a focus on performance, accessibility, and user experience.
+
+The site features a clean, minimalist design that puts the focus on the projects themselves. Each project page includes detailed case studies, screenshots, and live demos.
+
+Client: Acme Corp
+
+Year: 2024
+
+Technologies: React, TypeScript, Tailwind CSS, Next.js
+
+Featured: true
+
+Url: https://example.com
+
+Created: 2024-01-15 10:30:00
+Updated: 2024-01-20 14:45:00
+Author: admin
+Published: 2024-01-20 14:45:00
