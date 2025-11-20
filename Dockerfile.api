@@ -1,19 +1,39 @@
-FROM node:20-alpine
+FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy package files
+# Copy root package.json
 COPY package*.json ./
-COPY packages/api/package*.json ./packages/api/
+COPY tsconfig.json ./
+
+# Copy workspace package.json files
 COPY packages/shared/package*.json ./packages/shared/
+COPY packages/api/package*.json ./packages/api/
 
 # Install dependencies
-RUN npm ci --production
+RUN npm ci
 
 # Copy source code
 COPY packages/shared ./packages/shared
 COPY packages/api ./packages/api
 
-# Set working directory
+# Build shared package first
+WORKDIR /app/packages/shared
+RUN npm run build || echo "No build script in shared"
+
+# Build API package
+WORKDIR /app/packages/api
+RUN npm run build
+
+# Production stage
+FROM node:20-alpine
+WORKDIR /app
+
+# Copy built artifacts and dependencies
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/packages/shared ./packages/shared
+COPY --from=builder /app/packages/api ./packages/api
+COPY --from=builder /app/node_modules ./node_modules
+
 WORKDIR /app/packages/api
 
 EXPOSE 3000
