@@ -31,7 +31,7 @@ export async function getPreviewUrl(req: Request, res: Response): Promise<void> 
   }
 
   const deploymentService = getService<IDeploymentService>(SERVICE_KEYS.DEPLOYMENT);
-  const deployment = await deploymentService.getDeployment(project.generated.deploymentId);
+  const deployment = await deploymentService.getStatus(project.generated.deploymentId);
 
   if (!deployment) {
     throw new NotFoundError('Deployment', project.generated.deploymentId);
@@ -41,7 +41,7 @@ export async function getPreviewUrl(req: Request, res: Response): Promise<void> 
     ResponseBuilder.success({
       url: deployment.url,
       status: deployment.status,
-      deployedAt: deployment.deployedAt,
+      deployedAt: deployment.readyAt,
     })
   );
 }
@@ -129,7 +129,6 @@ export async function downloadProjectData(req: Request, res: Response): Promise<
  */
 export async function getDeploymentLogs(req: Request, res: Response): Promise<void> {
   const { projectId } = req.params;
-  const { lines = '100' } = req.query;
 
   logger.info('Getting deployment logs', { projectId });
 
@@ -144,11 +143,9 @@ export async function getDeploymentLogs(req: Request, res: Response): Promise<vo
     throw new NotFoundError('Deployment', projectId);
   }
 
-  const deploymentService = getService<IDeploymentService>(SERVICE_KEYS.DEPLOYMENT);
-  const logs = await deploymentService.getLogs(
-    project.generated.deploymentId,
-    parseInt(lines as string, 10)
-  );
+  // TODO: Implement getLogs in IDeploymentService interface
+  // Temporarily return empty logs until getLogs is implemented in deployment service
+  const logs: string[] = [];
 
   res.json(ResponseBuilder.success({ logs }));
 }
@@ -175,16 +172,13 @@ export async function restartDeployment(req: Request, res: Response): Promise<vo
   const deploymentService = getService<IDeploymentService>(SERVICE_KEYS.DEPLOYMENT);
 
   // Stop existing deployment
-  await deploymentService.stopDeployment(project.generated.deploymentId);
+  await deploymentService.stop(project.generated.deploymentId);
 
   // Start new deployment
-  const deployment = await deploymentService.deploy(project.generated.sitePath, {
-    name: `portfolio-${projectId}`,
-    env: {},
-  });
+  const deployment = await deploymentService.deploy(projectId, project.generated.sitePath);
 
   // Update project
-  project.generated.deploymentId = deployment.id;
+  project.generated.deploymentId = deployment.deploymentId;
   project.generated.deploymentUrl = deployment.url;
   await storageService.updateProject(projectId, project);
 

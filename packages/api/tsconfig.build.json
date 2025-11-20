@@ -1,15 +1,22 @@
 {
-  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "noEmit": false,
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["ES2022"],
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "composite": false,
-    "declaration": false,
-    "declarationMap": false,
-    "sourceMap": false,
-    "noEmitOnError": false
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "noEmitOnError": false,
+    "types": ["node", "jest"],
+    "baseUrl": ".",
+    "paths": {
+      "@kirby-gen/shared": ["../shared/src"],
+      "@kirby-gen/shared/*": ["../shared/src/*"]
+    }
   },
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "tests"]
 }
