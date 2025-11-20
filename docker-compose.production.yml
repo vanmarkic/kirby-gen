@@ -25,6 +25,7 @@ services:
       - storage:/tmp/kirby-gen/storage
       - sessions:/tmp/kirby-gen/sessions
       - deployments:/tmp/kirby-gen/deployments
+      - uploads:/tmp/kirby-gen/uploads
 
   skills:
     build:
@@ -39,3 +40,4 @@ volumes:
   storage:
   sessions:
   deployments:
+  uploads:
