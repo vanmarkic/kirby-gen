@@ -18,8 +18,8 @@ COPY packages/api ./packages/api
 
 # Build shared and API packages from root (workspace-aware)
 WORKDIR /app
-RUN npm run build --workspace=packages/shared --if-present
-RUN npm run build:prod --workspace=packages/api
+RUN npm --workspace=packages/shared run build --if-present
+RUN npm --workspace=packages/api run build:prod
 
 # Production stage
 FROM node:20-alpine
