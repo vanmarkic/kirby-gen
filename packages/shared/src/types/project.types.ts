@@ -96,6 +96,7 @@ export interface Entity {
   pluralName: string;
   description: string;
   fields: EntityField[];
+  relationships?: Relationship[];
   icon?: string;
   color?: string;
 }
@@ -281,3 +282,9 @@ export interface Message {
  * Domain schema for visualization (alias for DomainModel)
  */
 export type DomainSchema = DomainModel;
+
+/**
+ * Type aliases for backwards compatibility
+ */
+export type Project = ProjectData;
+export type BrandingConfig = BrandingAssets;
