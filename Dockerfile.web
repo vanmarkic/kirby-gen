@@ -18,8 +18,8 @@ COPY packages/web ./packages/web
 
 # Build shared and web packages from root (workspace-aware)
 WORKDIR /app
-RUN npm run build -w packages/shared --if-present
-RUN npm run build -w packages/web
+RUN npm run build --workspace=packages/shared --if-present
+RUN npm run build --workspace=packages/web
 
 # Production stage
 FROM nginx:alpine

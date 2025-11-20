@@ -199,6 +199,23 @@ Access via: **Resource** → **Metrics**
 
 ## Troubleshooting
 
+### Build Fails: npm command not found (exit code 127)
+
+**Symptom:** Build fails with error at `RUN npm run build -w packages/shared --if-present`
+
+**Cause:** Incorrect npm workspace syntax in Dockerfiles
+
+**Fix:** Use `--workspace=` instead of `-w`:
+```dockerfile
+# ❌ Wrong
+RUN npm run build -w packages/shared --if-present
+
+# ✅ Correct
+RUN npm run build --workspace=packages/shared --if-present
+```
+
+**Fixed in:** [Dockerfile.web:21](Dockerfile.web#L21), [Dockerfile.api:21](Dockerfile.api#L21)
+
 ### Build Fails with Memory Error
 
 Free up disk space:
