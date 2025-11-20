@@ -29,7 +29,7 @@ RESPONSE_FILE="$TEMP_DIR/response.txt"
 
 # Call Claude CLI and capture output
 # We use a here-document to send the prompt to Claude
-echo "$PROMPT" | claude --quiet > "$RESPONSE_FILE" 2>&1 || {
+echo "$PROMPT" | claude > "$RESPONSE_FILE" 2>&1 || {
   echo "Error: Claude CLI failed"
   echo "Error calling Claude CLI" > "$OUTPUT_FILE"
   [ -n "$FINISHED_HOOK" ] && touch "$FINISHED_HOOK"

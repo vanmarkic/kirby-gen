@@ -15,7 +15,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './',
-  testMatch: ['**/playwright-e2e.test.ts', '**/happy-path.test.ts'],
+  testMatch: ['**/playwright-e2e.test.ts', '**/happy-path.test.ts', '**/claude-integration.test.ts'],
 
   /* Run tests in files in parallel */
   fullyParallel: false,

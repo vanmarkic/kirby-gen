@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    environment:
+      - VITE_API_URL=http://api:3000
+    ports:
+      - "5173:5173"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    environment:
+      - NODE_ENV=production
+      - CLAUDE_API_KEY=${CLAUDE_API_KEY}
+      - SKILLS_URL=http://skills:8001
+      - PORT=3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - storage:/tmp/kirby-gen/storage
+      - sessions:/tmp/kirby-gen/sessions
+      - deployments:/tmp/kirby-gen/deployments
+
+  skills:
+    build:
+      context: .
+      dockerfile: Dockerfile.skills
+    environment:
+      - CLAUDE_API_KEY=${CLAUDE_API_KEY}
+    ports:
+      - "8001:8001"
+
+volumes:
+  storage:
+  sessions:
+  deployments:
