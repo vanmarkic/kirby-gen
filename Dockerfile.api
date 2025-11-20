@@ -16,13 +16,10 @@ RUN npm ci
 COPY packages/shared ./packages/shared
 COPY packages/api ./packages/api
 
-# Build shared package first
-WORKDIR /app/packages/shared
-RUN npm run build || echo "No build script in shared"
-
-# Build API package
-WORKDIR /app/packages/api
-RUN npm run build
+# Build shared and API packages from root (workspace-aware)
+WORKDIR /app
+RUN npm run build --workspace=packages/shared --if-present
+RUN npm run build --workspace=packages/api
 
 # Production stage
 FROM node:20-alpine

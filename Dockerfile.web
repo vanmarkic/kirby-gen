@@ -16,13 +16,10 @@ RUN npm ci
 COPY packages/shared ./packages/shared
 COPY packages/web ./packages/web
 
-# Build shared package first
-WORKDIR /app/packages/shared
-RUN npm run build || echo "No build script in shared"
-
-# Build web package
-WORKDIR /app/packages/web
-RUN npm run build
+# Build shared and web packages from root (workspace-aware)
+WORKDIR /app
+RUN npm run build --workspace=packages/shared --if-present
+RUN npm run build --workspace=packages/web
 
 # Production stage
 FROM nginx:alpine
