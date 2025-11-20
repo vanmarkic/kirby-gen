@@ -9,8 +9,9 @@ COPY tsconfig.json ./
 COPY packages/shared/package*.json ./packages/shared/
 COPY packages/api/package*.json ./packages/api/
 
-# Install dependencies
-RUN npm ci
+# Install all dependencies including devDependencies (needed for TypeScript build)
+# Note: --include=dev ensures devDependencies are installed even when NODE_ENV=production
+RUN npm ci --include=dev
 
 # Copy source code
 COPY packages/shared ./packages/shared

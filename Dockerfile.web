@@ -9,8 +9,9 @@ COPY tsconfig.json ./
 COPY packages/shared/package*.json ./packages/shared/
 COPY packages/web/package*.json ./packages/web/
 
-# Install all dependencies (monorepo-aware)
-RUN npm ci
+# Install all dependencies including devDependencies (needed for TypeScript build)
+# Note: --include=dev ensures devDependencies are installed even when NODE_ENV=production
+RUN npm ci --include=dev
 
 # Copy all source code
 COPY packages/shared ./packages/shared
