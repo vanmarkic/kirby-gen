@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User } from 'lucide-react';
 import type { DomainSchema, Message } from '@kirby-gen/shared';
+import { domainMappingEndpoints } from '../api/endpoints';
 
 interface ConversationUIProps {
   projectId: string;
@@ -30,15 +31,7 @@ export default function ConversationUI({
 
   const initializeConversation = async () => {
     try {
-      const response = await fetch(
-        `/api/projects/${projectId}/domain-mapping/init`,
-        {
-          method: 'POST',
-        }
-      );
-
-      const result = await response.json();
-      const data = result.data; // Extract from ResponseBuilder wrapper
+      const data = await domainMappingEndpoints.initialize(projectId);
 
       if (data.initialMessage) {
         setMessages([
@@ -69,22 +62,10 @@ export default function ConversationUI({
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        `/api/projects/${projectId}/domain-mapping/message`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            message: input,
-            conversationHistory: messages,
-          }),
-        }
-      );
-
-      const result = await response.json();
-      const data = result.data; // Extract from ResponseBuilder wrapper
+      const data = await domainMappingEndpoints.sendMessage(projectId, {
+        message: input,
+        conversationHistory: messages,
+      });
 
       const assistantMessage: Message = {
         role: 'assistant',
