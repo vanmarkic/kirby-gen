@@ -5,7 +5,7 @@ import { Request, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
 import { promises as fs } from 'fs';
-import { nanoid } from 'nanoid';
+import { randomBytes } from 'crypto';
 import { IStorageService, FileReference, SERVICE_KEYS } from '@kirby-gen/shared';
 import { getService } from '../config/di-setup';
 import { ResponseBuilder } from '../utils/response';
@@ -27,7 +27,7 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${nanoid(8)}`;
+    const uniqueSuffix = `${Date.now()}-${randomBytes(4).toString('hex')}`;
     const ext = path.extname(file.originalname);
     const basename = path.basename(file.originalname, ext);
     cb(null, `${basename}-${uniqueSuffix}${ext}`);
@@ -98,7 +98,7 @@ export async function uploadContentFiles(req: Request, res: Response): Promise<v
 
   // Create file references
   const fileReferences: FileReference[] = files.map((file) => ({
-    id: nanoid(),
+    id: randomBytes(8).toString('hex'),
     filename: file.filename,
     originalName: file.originalname,
     mimeType: file.mimetype,
@@ -141,7 +141,7 @@ export async function uploadBrandingAssets(req: Request, res: Response): Promise
   if (files.logo && files.logo[0]) {
     const logoFile = files.logo[0];
     project.inputs.brandingAssets.logo = {
-      id: nanoid(),
+      id: randomBytes(8).toString('hex'),
       filename: logoFile.filename,
       originalName: logoFile.originalname,
       mimeType: logoFile.mimetype,
@@ -155,7 +155,7 @@ export async function uploadBrandingAssets(req: Request, res: Response): Promise
   if (files.guidelines && files.guidelines[0]) {
     const guidelinesFile = files.guidelines[0];
     project.inputs.brandingAssets.guidelines = {
-      id: nanoid(),
+      id: randomBytes(8).toString('hex'),
       filename: guidelinesFile.filename,
       originalName: guidelinesFile.originalname,
       mimeType: guidelinesFile.mimetype,

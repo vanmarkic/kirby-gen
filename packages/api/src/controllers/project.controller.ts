@@ -2,11 +2,11 @@
  * Project CRUD operations controller
  */
 import { Request, Response } from 'express';
-import { nanoid } from 'nanoid';
+import { randomUUID } from 'crypto';
 import { IStorageService, ProjectData, SERVICE_KEYS } from '@kirby-gen/shared';
 import { getService } from '../config/di-setup';
 import { ResponseBuilder } from '../utils/response';
-import { NotFoundError, ValidationError } from '../utils/errors';
+import { NotFoundError } from '../utils/errors';
 import { logger } from '../config/logger';
 
 /**
@@ -14,9 +14,11 @@ import { logger } from '../config/logger';
  */
 export async function createProject(req: Request, res: Response): Promise<void> {
   const storageService = getService<IStorageService>(SERVICE_KEYS.STORAGE);
+  const { name } = req.body;
 
   const projectData: ProjectData = {
-    id: nanoid(),
+    id: randomUUID(),
+    name: name || `Untitled Project ${new Date().toISOString().split('T')[0]}`,
     createdAt: new Date(),
     updatedAt: new Date(),
     inputs: {
@@ -29,7 +31,7 @@ export async function createProject(req: Request, res: Response): Promise<void> 
     errors: [],
   };
 
-  logger.info('Creating new project', { projectId: projectData.id });
+  logger.info('Creating new project', { projectId: projectData.id, name: projectData.name });
 
   const project = await storageService.createProject(projectData);
 

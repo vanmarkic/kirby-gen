@@ -29,6 +29,41 @@ describe('Project API Integration Tests', () => {
         }),
       });
     });
+
+    it('should create a new project with name from request body', async () => {
+      const projectName = `Portfolio ${new Date().toISOString().split('T')[0]}`;
+
+      const response = await request(app)
+        .post('/api/projects')
+        .send({ name: projectName })
+        .expect(201);
+
+      expect(response.body).toMatchObject({
+        success: true,
+        data: expect.objectContaining({
+          id: expect.any(String),
+          name: projectName,
+          status: 'input',
+          inputs: expect.any(Object),
+        }),
+      });
+    });
+
+    it('should create a project with default name if none provided', async () => {
+      const response = await request(app)
+        .post('/api/projects')
+        .send({})
+        .expect(201);
+
+      expect(response.body).toMatchObject({
+        success: true,
+        data: expect.objectContaining({
+          id: expect.any(String),
+          name: expect.stringContaining('Untitled Project'),
+          status: 'input',
+        }),
+      });
+    });
   });
 
   describe('GET /api/projects/:projectId', () => {

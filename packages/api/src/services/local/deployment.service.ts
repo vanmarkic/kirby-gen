@@ -1,7 +1,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as child_process from 'child_process';
-import { nanoid } from 'nanoid';
+import { randomUUID } from 'crypto';
 import {
   IDeploymentService,
   DeploymentResult,
@@ -62,7 +62,7 @@ export class LocalDeploymentService implements IDeploymentService {
     }
 
     // Generate deployment ID
-    const deploymentId = nanoid();
+    const deploymentId = randomUUID();
 
     // Find available port
     const port = await this.findAvailablePort();

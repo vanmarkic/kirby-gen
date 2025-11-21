@@ -1,6 +1,6 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { nanoid } from 'nanoid';
+import { randomBytes } from 'crypto';
 import type { ISessionService } from '../../../../shared/src/interfaces/session.interface';
 import type { ProjectData } from '../../../../shared/src/types/project.types';
 
@@ -71,7 +71,7 @@ export class LocalSessionService implements ISessionService {
     const maxAttempts = 10;
 
     while (attempts < maxAttempts) {
-      const id = nanoid(16);
+      const id = randomBytes(8).toString('hex');
       const sessionPath = this.getSessionPath(id);
 
       try {

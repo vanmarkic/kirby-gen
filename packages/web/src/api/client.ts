@@ -12,11 +12,11 @@ export const apiClient = axios.create({
 // Request interceptor
 apiClient.interceptors.request.use(
   (config) => {
-    // Add any auth tokens here if needed
-    // const token = localStorage.getItem('token');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
+    // Add auth token from environment variable
+    const token = import.meta.env.VITE_AUTH_TOKEN;
+    if (token) {
+      config.headers['X-Auth-Token'] = token;
+    }
     return config;
   },
   (error) => {
