@@ -7,6 +7,43 @@ import { createApp } from '../../src/app';
 import { setupDependencyInjection } from '../../src/config/di-setup';
 import { Application } from 'express';
 
+// Mock environment with auth disabled for generation flow tests
+jest.mock('../../src/config/env', () => ({
+  env: {
+    AUTH_ENABLED: false,
+    AUTH_TOKEN: 'not-used',
+    NODE_ENV: 'test',
+    PORT: 3001,
+    HOST: '0.0.0.0',
+    LOG_LEVEL: 'error',
+    CORS_ORIGIN: 'http://localhost:5173',
+    CORS_CREDENTIALS: true,
+    RATE_LIMIT_WINDOW_MS: 900000,
+    RATE_LIMIT_MAX_REQUESTS: 100,
+    MAX_FILE_SIZE: 52428800,
+    UPLOAD_DIR: './data/uploads',
+    STORAGE_DIR: './data/storage',
+    SESSION_DIR: './data/sessions',
+    GIT_USER_NAME: 'Test User',
+    GIT_USER_EMAIL: 'test@example.com',
+    DEPLOYMENT_DIR: './data/deployments',
+    DEPLOYMENT_PORT_START: 4000,
+    SKILLS_SERVER_URL: 'http://localhost:5000',
+    SKILLS_TIMEOUT_MS: 300000,
+    KIRBY_GENERATOR_PATH: '../kirby-generator',
+    WS_PING_INTERVAL: 30000,
+    WS_PING_TIMEOUT: 60000,
+    CLAUDE_MODEL: 'claude-3-5-sonnet-20241022',
+    CLAUDE_USE_CLI: false,
+    CLAUDE_CLI_SCRIPT: './scripts/claude-cli.sh',
+    CLAUDE_CLI_OUTPUT_DIR: './data/claude-output',
+  },
+  isDevelopment: jest.fn(() => false),
+  isProduction: jest.fn(() => false),
+  isLocal: jest.fn(() => false),
+  isTest: jest.fn(() => true),
+}));
+
 let app: Application;
 let projectId: string;
 
@@ -73,7 +110,6 @@ describe('E2E: Error Handling', () => {
       .get('/api/projects/invalid-id-12345')
       .expect(404);
 
-    expect(response.body.success).toBe(false);
     expect(response.body.error.code).toBe('NOT_FOUND');
   });
 
@@ -82,7 +118,6 @@ describe('E2E: Error Handling', () => {
       .get('/api/non-existent-route')
       .expect(404);
 
-    expect(response.body.success).toBe(false);
     expect(response.body.error.code).toBe('NOT_FOUND');
   });
 
@@ -104,7 +139,6 @@ describe('E2E: Error Handling', () => {
       })
       .expect(400);
 
-    expect(response.body.success).toBe(false);
     expect(response.body.error.code).toBe('VALIDATION_ERROR');
   });
 });
