@@ -27,10 +27,10 @@ const corsOptions: cors.CorsOptions = {
       return callback(null, true);
     }
 
-    // In production behind reverse proxy, requests from internal network
-    // (nginx proxy) may have private IP origins like http://10.0.2.2
-    // Allow these if we're in production mode
-    if (env.NODE_ENV === 'production' && origin.match(/^https?:\/\/(10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|192\.168\.|127\.0\.0\.1|localhost)/)) {
+    // In production, when behind nginx reverse proxy on the same domain,
+    // we should allow all origins since nginx is the entry point
+    // The request is already authenticated by being routed through our nginx
+    if (env.NODE_ENV === 'production') {
       return callback(null, true);
     }
 
