@@ -27,6 +27,7 @@ export interface ProjectData {
   // Generation phase
   generated?: GeneratedSite;
   deployment?: GeneratedSite; // Alias for generated (used by web components)
+  generatedArtifacts?: GeneratedArtifacts; // NEW: Generated artifacts metadata
 
   // Metadata
   status: ProjectStatus;

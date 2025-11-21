@@ -101,7 +101,6 @@ export const container = new ServiceContainer();
 export const SERVICE_KEYS = {
   STORAGE: 'storage',
   SESSION: 'session',
-  GIT: 'git',
   DEPLOYMENT: 'deployment',
 } as const;
 

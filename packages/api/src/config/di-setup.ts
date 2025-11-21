@@ -6,7 +6,6 @@ import { container, SERVICE_KEYS } from '@kirby-gen/shared';
 import {
   LocalStorageService,
   LocalSessionService,
-  LocalGitService,
   LocalDeploymentService,
 } from '../services/local';
 import { env } from './env';
@@ -37,17 +36,6 @@ export function setupDependencyInjection(): void {
         new LocalSessionService({
           basePath: env.SESSION_DIR,
           createDirectories: true,
-        }),
-      true
-    );
-
-    // Register Git Service
-    container.register(
-      SERVICE_KEYS.GIT,
-      () =>
-        new LocalGitService({
-          userName: env.GIT_USER_NAME,
-          userEmail: env.GIT_USER_EMAIL,
         }),
       true
     );

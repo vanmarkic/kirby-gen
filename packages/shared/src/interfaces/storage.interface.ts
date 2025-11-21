@@ -1,4 +1,10 @@
-import { ProjectData } from '../types/project.types';
+import {
+  ProjectData,
+  ConversationTurn,
+  ConversationSession,
+  GeneratedArtifacts,
+  ProjectStatus,
+} from '../types/project.types';
 
 /**
  * Storage Service Interface
@@ -85,6 +91,48 @@ export interface IStorageService {
    * @returns File metadata
    */
   getFileMetadata(projectId: string, filename: string): Promise<FileMetadata>;
+
+  /**
+   * Save a conversation turn (append-based for active conversations)
+   * @param projectId - Unique project identifier
+   * @param phase - Workflow phase this conversation belongs to
+   * @param turn - Conversation turn to save
+   */
+  saveConversationTurn(
+    projectId: string,
+    phase: ProjectStatus,
+    turn: ConversationTurn
+  ): Promise<void>;
+
+  /**
+   * Get conversation by phase
+   * @param projectId - Unique project identifier
+   * @param phase - Workflow phase
+   * @returns Conversation session or null if not found
+   */
+  getConversation(
+    projectId: string,
+    phase: ProjectStatus
+  ): Promise<ConversationSession | null>;
+
+  /**
+   * Save generated artifacts metadata
+   * @param projectId - Unique project identifier
+   * @param artifacts - Generated artifacts metadata
+   */
+  saveGeneratedArtifacts(
+    projectId: string,
+    artifacts: GeneratedArtifacts
+  ): Promise<void>;
+
+  /**
+   * Get generated artifacts metadata
+   * @param projectId - Unique project identifier
+   * @returns Generated artifacts or null if not found
+   */
+  getGeneratedArtifacts(
+    projectId: string
+  ): Promise<GeneratedArtifacts | null>;
 }
 
 export interface FileMetadata {

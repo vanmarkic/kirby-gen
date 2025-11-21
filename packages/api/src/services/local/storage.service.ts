@@ -2,7 +2,13 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { constants } from 'fs';
 import { IStorageService, FileMetadata } from '../../../../shared/src/interfaces/storage.interface';
-import { ProjectData } from '../../../../shared/src/types/project.types';
+import {
+  ProjectData,
+  ConversationTurn,
+  ConversationSession,
+  GeneratedArtifacts,
+  ProjectStatus,
+} from '../../../../shared/src/types/project.types';
 import * as crypto from 'crypto';
 
 /**
@@ -481,5 +487,150 @@ export class LocalStorageService implements IStorageService {
       }
       throw new Error(`Failed to list projects: ${error.message}`);
     }
+  }
+
+  /**
+   * Get conversation file path for a project phase
+   */
+  private getConversationPath(projectId: string, phase: ProjectStatus): string {
+    this.validateProjectId(projectId);
+    return path.join(this.basePath, projectId, 'conversations', `${phase}.json`);
+  }
+
+  /**
+   * Save a conversation turn (append-based for active conversations)
+   */
+  async saveConversationTurn(
+    projectId: string,
+    phase: ProjectStatus,
+    turn: ConversationTurn
+  ): Promise<void> {
+    this.validateProjectId(projectId);
+
+    // Verify project exists
+    const project = await this.getProject(projectId);
+    if (!project) {
+      throw new Error(`Project not found: ${projectId}`);
+    }
+
+    const conversationPath = this.getConversationPath(projectId, phase);
+    const conversationDir = path.dirname(conversationPath);
+
+    try {
+      // Ensure conversations directory exists
+      await fs.mkdir(conversationDir, { recursive: true });
+
+      // Load existing conversation or create new
+      let session: ConversationSession;
+      try {
+        const content = await fs.readFile(conversationPath, 'utf-8');
+        session = JSON.parse(content);
+        // Convert date strings back to Date objects
+        session.startedAt = new Date(session.startedAt);
+        if (session.completedAt) {
+          session.completedAt = new Date(session.completedAt);
+        }
+        session.turns = session.turns.map(t => ({
+          ...t,
+          timestamp: new Date(t.timestamp),
+        }));
+      } catch (error: any) {
+        if (error.code === 'ENOENT') {
+          // Create new session
+          session = {
+            projectId,
+            phase,
+            sessionId: crypto.randomUUID(),
+            startedAt: new Date(),
+            turns: [],
+            status: 'active',
+          };
+        } else {
+          throw error;
+        }
+      }
+
+      // Append new turn
+      session.turns.push(turn);
+
+      // Write atomically (tmp file + rename)
+      const tmpPath = `${conversationPath}.tmp`;
+      await fs.writeFile(tmpPath, JSON.stringify(session, null, 2), 'utf-8');
+      await fs.rename(tmpPath, conversationPath);
+    } catch (error: any) {
+      if (error.message?.includes('Invalid') || error.message?.includes('not found')) {
+        throw error;
+      }
+      throw new Error(`Failed to save conversation turn: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get conversation by phase
+   */
+  async getConversation(
+    projectId: string,
+    phase: ProjectStatus
+  ): Promise<ConversationSession | null> {
+    this.validateProjectId(projectId);
+
+    const conversationPath = this.getConversationPath(projectId, phase);
+
+    try {
+      const content = await fs.readFile(conversationPath, 'utf-8');
+      const session: ConversationSession = JSON.parse(content);
+
+      // Convert date strings back to Date objects
+      session.startedAt = new Date(session.startedAt);
+      if (session.completedAt) {
+        session.completedAt = new Date(session.completedAt);
+      }
+      session.turns = session.turns.map(t => ({
+        ...t,
+        timestamp: new Date(t.timestamp),
+      }));
+
+      return session;
+    } catch (error: any) {
+      if (error.message?.includes('Invalid')) {
+        throw error;
+      }
+      if (error.code === 'ENOENT') {
+        return null;
+      }
+      throw new Error(`Failed to get conversation: ${error.message}`);
+    }
+  }
+
+  /**
+   * Save generated artifacts metadata
+   */
+  async saveGeneratedArtifacts(
+    projectId: string,
+    artifacts: GeneratedArtifacts
+  ): Promise<void> {
+    this.validateProjectId(projectId);
+
+    // Update project metadata with artifacts reference
+    const project = await this.getProject(projectId);
+    if (!project) {
+      throw new Error(`Project not found: ${projectId}`);
+    }
+
+    await this.updateProject(projectId, {
+      generatedArtifacts: artifacts,
+    });
+  }
+
+  /**
+   * Get generated artifacts metadata
+   */
+  async getGeneratedArtifacts(
+    projectId: string
+  ): Promise<GeneratedArtifacts | null> {
+    this.validateProjectId(projectId);
+
+    const project = await this.getProject(projectId);
+    return project?.generatedArtifacts || null;
   }
 }

@@ -9,7 +9,6 @@ import {
   ProjectStatus,
   IStorageService,
   ISessionService,
-  IGitService,
   IDeploymentService,
 } from '@kirby-gen/shared';
 import { SERVICE_KEYS } from '@kirby-gen/shared';
@@ -34,14 +33,12 @@ import { env } from '../config/env';
 export class WorkflowOrchestrator extends EventEmitter {
   private storageService: IStorageService;
   private sessionService: ISessionService;
-  private gitService: IGitService;
   private deploymentService: IDeploymentService;
 
   constructor() {
     super();
     this.storageService = getService<IStorageService>(SERVICE_KEYS.STORAGE);
     this.sessionService = getService<ISessionService>(SERVICE_KEYS.SESSION);
-    this.gitService = getService<IGitService>(SERVICE_KEYS.GIT);
     this.deploymentService = getService<IDeploymentService>(SERVICE_KEYS.DEPLOYMENT);
   }
 
@@ -308,16 +305,25 @@ export class WorkflowOrchestrator extends EventEmitter {
       // Simulated result for now
       const outputPath = path.join(context.outputDir, 'site');
 
-      // Initialize git repository
-      this.emitProgress(state, 'in_progress', 75, 'Initializing Git repository...');
-      const gitRepo = await this.gitService.createRepo(project.id, true);
+      // Save generated artifacts to storage
+      this.emitProgress(state, 'in_progress', 75, 'Saving generated artifacts...');
+
+      // TODO: Collect actual generated file references from Kirby adapter
+      // For now, we'll use placeholder data
+      await this.storageService.saveGeneratedArtifacts(project.id, {
+        blueprints: [],
+        templates: [],
+        content: [],
+        assets: [],
+        generatedAt: new Date(),
+        cmsAdapter: 'kirby',
+      });
 
       // Update project
       project.generated = {
         cmsName: 'kirby',
         cmsVersion: '4.0.0',
         sitePath: outputPath,
-        gitRepo,
         deploymentUrl: '', // Will be set in deployment phase
         deploymentId: '',
         kirbyVersion: '4.0.0',
