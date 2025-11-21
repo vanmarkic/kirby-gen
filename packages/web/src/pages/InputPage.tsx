@@ -5,7 +5,6 @@ import FileUpload from '../components/FileUpload';
 import BrandingForm from '../components/BrandingForm';
 import { useProject } from '../hooks/useProject';
 import { fileEndpoints } from '../api/endpoints';
-import { MAX_FILES_PER_UPLOAD } from '@kirby-gen/shared';
 import type { BrandingConfig } from '@kirby-gen/shared';
 
 export default function InputPage() {
@@ -33,10 +32,11 @@ export default function InputPage() {
 
   // Clear validation error when files change
   useEffect(() => {
-    if (validationError && files.length <= MAX_FILES_PER_UPLOAD) {
+    if (validationError) {
       setValidationError(null);
     }
-  }, [files.length, validationError]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [files.length]);
 
   // Don't render if no projectId
   if (!projectId) {
@@ -45,14 +45,6 @@ export default function InputPage() {
 
   const handleSubmit = async () => {
     if (!projectId) return;
-
-    // Validate file count before uploading
-    if (files.length > MAX_FILES_PER_UPLOAD) {
-      setValidationError(
-        `Too many files selected. Maximum ${MAX_FILES_PER_UPLOAD} files allowed, but you have ${files.length} files.`
-      );
-      return;
-    }
 
     setValidationError(null);
     setIsSubmitting(true);
@@ -142,10 +134,6 @@ export default function InputPage() {
             <FileUpload
               files={files}
               onFilesChange={setFiles}
-              accept={{
-                'image/*': ['.png', '.jpg', '.jpeg', '.webp', '.gif'],
-                'application/pdf': ['.pdf'],
-              }}
             />
 
             <div className="pinterest-input">
