@@ -1,0 +1,111 @@
+title: "Release"
+icon: "disc"
+num: "num"
+status:
+  draft:
+    label: "Draft"
+    text: "This page is in draft mode"
+  listed:
+    label: "Published"
+    text: "This page is published and visible"
+  unlisted:
+    label: "Unlisted"
+    text: "This page is published but not listed"
+options:
+  changeSlug: true
+  changeStatus: true
+  changeTemplate: false
+  delete: true
+  duplicate: true
+  preview: true
+  read: true
+  update: true
+tabs:
+  content:
+    label: "Content"
+    icon: "text"
+    columns:
+      - width: "1/1"
+        sections:
+          main:
+            type: "fields"
+            fields:
+              title:
+                label: "Title"
+                type: "text"
+                translate: true
+                required: true
+                help: "Album, EP, or single name"
+                placeholder: "e.g., Blue Notes"
+                width: "1/1"
+              releaseDate:
+                label: "Release Date"
+                type: "date"
+                translate: true
+                required: true
+                help: "When was this released?"
+                width: "1/2"
+              releaseType:
+                label: "Release Type"
+                type: "select"
+                translate: true
+                required: true
+                help: "Type of release"
+                width: "1/2"
+                options:
+                  album: "Album"
+                  ep: "EP"
+                  single: "Single"
+              description:
+                label: "Description"
+                type: "textarea"
+                translate: true
+                help: "About this release"
+                width: "1/1"
+              streamingLinks:
+                label: "Streaming Links"
+                type: "structure"
+                translate: true
+                help: "Links to streaming platforms"
+                width: "1/1"
+                fields:
+                  platform:
+                    label: "Platform"
+                    type: "text"
+                    translate: true
+                    required: true
+                  url:
+                    label: "URL"
+                    type: "url"
+                    translate: true
+                    required: true
+              tracklist:
+                label: "Tracklist"
+                type: "list"
+                translate: true
+                help: "List of tracks"
+                width: "1/1"
+  media:
+    label: "Media"
+    icon: "image"
+    columns:
+      - width: "1/1"
+        sections:
+          main:
+            type: "fields"
+            fields:
+              coverArt:
+                label: "Cover Art"
+                type: "files"
+                translate: true
+                help: "Album or single cover image"
+                width: "1/2"
+  settings:
+    label: "Settings"
+    icon: "cog"
+    fields:
+      slug:
+        label: "Slug"
+        type: "text"
+        help: "URL-friendly identifier"
+        icon: "url"

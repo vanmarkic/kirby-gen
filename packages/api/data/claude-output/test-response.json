@@ -1,0 +1,1 @@
+{"success":false,"error":{"code":"INTERNAL_ERROR","message":"An internal error occurred","details":"CLAUDE_API_KEY environment variable required when not using CLI mode. Set NODE_ENV=local to use CLI instead."}}

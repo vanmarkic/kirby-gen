@@ -1,0 +1,29 @@
+{
+  "timestamp": "2025-11-21T05:22:38.362Z",
+  "duration_ms": 10967,
+  "turns": 10,
+  "raw_response": {
+    "success": true,
+    "data": {
+      "message": "I encountered an error: Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CVLUVaxLBeSFGsPHvs5KX'}. Let's try again.",
+      "suggestedQuestions": [
+        "Can you repeat your last message?"
+      ],
+      "currentState": "discovering_profession",
+      "needsInputOn": null,
+      "examples": null,
+      "contentSchema": null,
+      "domainModel": null
+    },
+    "error": null,
+    "metadata": {
+      "duration": 0.1427760124206543,
+      "session_id": "real-api-test-1763702547392"
+    }
+  },
+  "parsed_result": {
+    "success": false,
+    "entity_count": 0,
+    "relationship_count": 0
+  }
+}

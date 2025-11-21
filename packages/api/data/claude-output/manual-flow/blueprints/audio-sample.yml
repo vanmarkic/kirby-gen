@@ -1,0 +1,65 @@
+title: "AudioSample"
+icon: "music"
+num: "num"
+status:
+  draft:
+    label: "Draft"
+    text: "This page is in draft mode"
+  listed:
+    label: "Published"
+    text: "This page is published and visible"
+  unlisted:
+    label: "Unlisted"
+    text: "This page is published but not listed"
+options:
+  changeSlug: true
+  changeStatus: true
+  changeTemplate: false
+  delete: true
+  duplicate: true
+  preview: true
+  read: true
+  update: true
+columns:
+  - width: "1/1"
+    sections:
+      main:
+        type: "fields"
+        fields:
+          title:
+            label: "Title"
+            type: "text"
+            translate: true
+            required: true
+            help: "Name of the track or sample"
+            placeholder: "e.g., Midnight Jazz"
+            width: "1/1"
+          audioFile:
+            label: "Audio File"
+            type: "files"
+            translate: true
+            required: true
+            help: "Upload the audio file"
+            width: "1/1"
+            query: "page.images"
+            max: 1
+            accept: ".mp3,.wav,.flac"
+          duration:
+            label: "Duration"
+            type: "text"
+            translate: true
+            help: "Length of the track (e.g., 3:45)"
+            placeholder: "3:45"
+            width: "1/3"
+          relatedRelease:
+            label: "Related Release"
+            type: "pages"
+            translate: true
+            help: "Link to the album or EP"
+            query: "site.find('Release').children"
+          description:
+            label: "Description"
+            type: "textarea"
+            translate: true
+            help: "About this track"
+            width: "1/1"

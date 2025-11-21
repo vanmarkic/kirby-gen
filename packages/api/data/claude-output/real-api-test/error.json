@@ -1,0 +1,7 @@
+{
+  "error": "fetch failed",
+  "stack": "TypeError: fetch failed\n    at node:internal/deps/undici/undici:13510:13\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/Users/dragan/Documents/kirby-gen/packages/api/tests/integration/anthropic-domain-mapping-real-api.integration.test.ts:164:28)",
+  "turn": 1,
+  "conversationHistory": [],
+  "timestamp": "2025-11-21T05:24:23.136Z"
+}

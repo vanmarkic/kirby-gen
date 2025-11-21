@@ -1,0 +1,477 @@
+{
+  "version": "1.0.0",
+  "entities": [
+    {
+      "id": "gig",
+      "name": "Gig",
+      "pluralName": "Gigs",
+      "description": "Live performance events, both upcoming and past",
+      "displayField": "title",
+      "icon": "calendar",
+      "sortable": true,
+      "timestamps": true,
+      "slugSource": "title",
+      "fields": [
+        {
+          "id": "title",
+          "name": "title",
+          "label": "Event Title",
+          "type": "text",
+          "required": true,
+          "helpText": "Name of the gig or event",
+          "placeholder": "e.g., Live at Blue Note Jazz Club",
+          "width": "full"
+        },
+        {
+          "id": "venue-name",
+          "name": "venueName",
+          "label": "Venue Name",
+          "type": "text",
+          "required": true,
+          "helpText": "Name of the venue",
+          "placeholder": "e.g., Blue Note Jazz Club",
+          "width": "half"
+        },
+        {
+          "id": "location",
+          "name": "location",
+          "label": "Location",
+          "type": "text",
+          "required": true,
+          "helpText": "City and address",
+          "placeholder": "e.g., New York, NY",
+          "width": "half"
+        },
+        {
+          "id": "date",
+          "name": "date",
+          "label": "Date",
+          "type": "date",
+          "required": true,
+          "helpText": "Date of the performance",
+          "width": "third"
+        },
+        {
+          "id": "time",
+          "name": "time",
+          "label": "Time",
+          "type": "time",
+          "required": false,
+          "helpText": "Start time",
+          "width": "third"
+        },
+        {
+          "id": "status",
+          "name": "status",
+          "label": "Status",
+          "type": "select",
+          "required": true,
+          "helpText": "Is this gig upcoming or past?",
+          "width": "third",
+          "options": {
+            "choices": [
+              {"value": "upcoming", "label": "Upcoming", "disabled": false},
+              {"value": "past", "label": "Past Performance", "disabled": false}
+            ]
+          }
+        },
+        {
+          "id": "description",
+          "name": "description",
+          "label": "Description",
+          "type": "textarea",
+          "required": false,
+          "helpText": "Details about the event",
+          "placeholder": "Describe the event...",
+          "width": "full"
+        },
+        {
+          "id": "ticket-link",
+          "name": "ticketLink",
+          "label": "Ticket Link",
+          "type": "url",
+          "required": false,
+          "helpText": "Link to purchase tickets (for upcoming gigs)",
+          "placeholder": "https://...",
+          "width": "full"
+        },
+        {
+          "id": "photos",
+          "name": "photos",
+          "label": "Photos",
+          "type": "gallery",
+          "required": false,
+          "helpText": "Photos from the performance",
+          "width": "full"
+        },
+        {
+          "id": "videos",
+          "name": "videos",
+          "label": "Videos",
+          "type": "files",
+          "required": false,
+          "helpText": "Performance videos",
+          "width": "full",
+          "options": {
+            "accept": [".mp4", ".mov", ".avi"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "artist",
+      "name": "Artist",
+      "pluralName": "Artists",
+      "description": "Artist profile with bio and information",
+      "displayField": "name",
+      "icon": "user",
+      "sortable": false,
+      "timestamps": true,
+      "slugSource": "name",
+      "fields": [
+        {
+          "id": "name",
+          "name": "name",
+          "label": "Artist Name",
+          "type": "text",
+          "required": true,
+          "helpText": "Your stage name or artist name",
+          "placeholder": "e.g., John Doe",
+          "width": "full"
+        },
+        {
+          "id": "bio",
+          "name": "bio",
+          "label": "Biography",
+          "type": "richtext",
+          "required": true,
+          "helpText": "Your artist bio",
+          "width": "full"
+        },
+        {
+          "id": "profile-photo",
+          "name": "profilePhoto",
+          "label": "Profile Photo",
+          "type": "image",
+          "required": false,
+          "helpText": "Main profile image",
+          "width": "half"
+        },
+        {
+          "id": "genre",
+          "name": "genre",
+          "label": "Genre/Style",
+          "type": "tags",
+          "required": false,
+          "helpText": "Musical genres or styles",
+          "placeholder": "e.g., Jazz, Blues",
+          "width": "half"
+        },
+        {
+          "id": "social-links",
+          "name": "socialLinks",
+          "label": "Social Media Links",
+          "type": "structure",
+          "required": false,
+          "helpText": "Links to social media profiles",
+          "width": "full",
+          "options": {
+            "fields": [
+              {
+                "id": "platform",
+                "name": "platform",
+                "label": "Platform",
+                "type": "select",
+                "required": true,
+                "options": {
+                  "choices": [
+                    {"value": "facebook", "label": "Facebook", "disabled": false},
+                    {"value": "instagram", "label": "Instagram", "disabled": false},
+                    {"value": "twitter", "label": "Twitter/X", "disabled": false},
+                    {"value": "spotify", "label": "Spotify", "disabled": false},
+                    {"value": "youtube", "label": "YouTube", "disabled": false}
+                  ]
+                }
+              },
+              {
+                "id": "url",
+                "name": "url",
+                "label": "URL",
+                "type": "url",
+                "required": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "release",
+      "name": "Release",
+      "pluralName": "Releases",
+      "description": "Albums, EPs, and singles in your discography",
+      "displayField": "title",
+      "icon": "disc",
+      "sortable": true,
+      "timestamps": true,
+      "slugSource": "title",
+      "fields": [
+        {
+          "id": "title",
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true,
+          "helpText": "Album, EP, or single name",
+          "placeholder": "e.g., Blue Notes",
+          "width": "full"
+        },
+        {
+          "id": "release-date",
+          "name": "releaseDate",
+          "label": "Release Date",
+          "type": "date",
+          "required": true,
+          "helpText": "When was this released?",
+          "width": "half"
+        },
+        {
+          "id": "release-type",
+          "name": "releaseType",
+          "label": "Release Type",
+          "type": "select",
+          "required": true,
+          "helpText": "Type of release",
+          "width": "half",
+          "options": {
+            "choices": [
+              {"value": "album", "label": "Album", "disabled": false},
+              {"value": "ep", "label": "EP", "disabled": false},
+              {"value": "single", "label": "Single", "disabled": false}
+            ]
+          }
+        },
+        {
+          "id": "cover-art",
+          "name": "coverArt",
+          "label": "Cover Art",
+          "type": "image",
+          "required": false,
+          "helpText": "Album or single cover image",
+          "width": "half"
+        },
+        {
+          "id": "description",
+          "name": "description",
+          "label": "Description",
+          "type": "textarea",
+          "required": false,
+          "helpText": "About this release",
+          "width": "full"
+        },
+        {
+          "id": "streaming-links",
+          "name": "streamingLinks",
+          "label": "Streaming Links",
+          "type": "structure",
+          "required": false,
+          "helpText": "Links to streaming platforms",
+          "width": "full",
+          "options": {
+            "fields": [
+              {
+                "id": "platform",
+                "name": "platform",
+                "label": "Platform",
+                "type": "text",
+                "required": true
+              },
+              {
+                "id": "url",
+                "name": "url",
+                "label": "URL",
+                "type": "url",
+                "required": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "tracklist",
+          "name": "tracklist",
+          "label": "Tracklist",
+          "type": "list",
+          "required": false,
+          "helpText": "List of tracks",
+          "width": "full"
+        }
+      ]
+    },
+    {
+      "id": "audio-sample",
+      "name": "AudioSample",
+      "pluralName": "AudioSamples",
+      "description": "Music clips and audio samples",
+      "displayField": "title",
+      "icon": "music",
+      "sortable": true,
+      "timestamps": true,
+      "slugSource": "title",
+      "fields": [
+        {
+          "id": "title",
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true,
+          "helpText": "Name of the track or sample",
+          "placeholder": "e.g., Midnight Jazz",
+          "width": "full"
+        },
+        {
+          "id": "audio-file",
+          "name": "audioFile",
+          "label": "Audio File",
+          "type": "file",
+          "required": true,
+          "helpText": "Upload the audio file",
+          "width": "full",
+          "options": {
+            "accept": [".mp3", ".wav", ".flac"]
+          }
+        },
+        {
+          "id": "duration",
+          "name": "duration",
+          "label": "Duration",
+          "type": "text",
+          "required": false,
+          "helpText": "Length of the track (e.g., 3:45)",
+          "placeholder": "3:45",
+          "width": "third"
+        },
+        {
+          "id": "related-release",
+          "name": "relatedRelease",
+          "label": "Related Release",
+          "type": "relation",
+          "required": false,
+          "helpText": "Link to the album or EP",
+          "width": "two-thirds",
+          "options": {
+            "targetEntity": "Release"
+          }
+        },
+        {
+          "id": "description",
+          "name": "description",
+          "label": "Description",
+          "type": "textarea",
+          "required": false,
+          "helpText": "About this track",
+          "width": "full"
+        }
+      ]
+    },
+    {
+      "id": "band-member",
+      "name": "BandMember",
+      "pluralName": "BandMembers",
+      "description": "Members of the band or collaborators",
+      "displayField": "name",
+      "icon": "users",
+      "sortable": true,
+      "timestamps": true,
+      "slugSource": "name",
+      "fields": [
+        {
+          "id": "name",
+          "name": "name",
+          "label": "Name",
+          "type": "text",
+          "required": true,
+          "helpText": "Band member's name",
+          "placeholder": "e.g., Jane Smith",
+          "width": "half"
+        },
+        {
+          "id": "role",
+          "name": "role",
+          "label": "Role/Instrument",
+          "type": "text",
+          "required": true,
+          "helpText": "What they play or do",
+          "placeholder": "e.g., Drums",
+          "width": "half"
+        },
+        {
+          "id": "photo",
+          "name": "photo",
+          "label": "Photo",
+          "type": "image",
+          "required": false,
+          "helpText": "Profile photo",
+          "width": "third"
+        },
+        {
+          "id": "bio",
+          "name": "bio",
+          "label": "Short Bio",
+          "type": "textarea",
+          "required": false,
+          "helpText": "Brief bio of the member",
+          "width": "two-thirds"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "id": "gig-to-artist",
+      "type": "many-to-one",
+      "from": "Gig",
+      "to": "Artist",
+      "label": "performed by",
+      "inversLabel": "has performed",
+      "required": true,
+      "cascadeDelete": false
+    },
+    {
+      "id": "release-to-artist",
+      "type": "many-to-one",
+      "from": "Release",
+      "to": "Artist",
+      "label": "released by",
+      "inversLabel": "has released",
+      "required": true,
+      "cascadeDelete": false
+    },
+    {
+      "id": "audio-sample-to-release",
+      "type": "many-to-one",
+      "from": "AudioSample",
+      "to": "Release",
+      "label": "from",
+      "inversLabel": "contains",
+      "required": false,
+      "cascadeDelete": false
+    },
+    {
+      "id": "band-member-to-artist",
+      "type": "many-to-one",
+      "from": "BandMember",
+      "to": "Artist",
+      "label": "member of",
+      "inversLabel": "has member",
+      "required": true,
+      "cascadeDelete": true
+    }
+  ],
+  "metadata": {
+    "name": "Musician Portfolio Schema",
+    "description": "Content schema for musician portfolio showcasing gigs, music, and band members",
+    "author": "Claude Code",
+    "createdAt": "2025-01-21T10:00:00Z",
+    "updatedAt": "2025-01-21T10:00:00Z"
+  }
+}

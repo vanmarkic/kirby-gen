@@ -725,7 +725,7 @@ label {
   font-size: 1.15rem;
   line-height: 1.85;
   letter-spacing: 0.015em;
-  color: var(--color-text);
+  color: #2a2419;
 }
 
 /* Style paragraphs within message text */
@@ -767,7 +767,7 @@ label {
 /* Style bold and italic */
 .message-text strong {
   font-weight: var(--font-weight-bold);
-  color: var(--color-text);
+  color: #1a140f;
 }
 
 .message-user .message-text strong {
@@ -785,13 +785,12 @@ label {
 
 .message-time {
   font-size: 0.95rem;
-  color: var(--color-text-secondary);
+  color: #5a4d3f;
   display: block;
   margin-top: var(--spacing-md);
   font-family: var(--font-family-accent);
   font-style: italic;
   letter-spacing: 0.3px;
-  opacity: 0.85;
 }
 
 .message-user .message-time {

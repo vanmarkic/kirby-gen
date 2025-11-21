@@ -1,0 +1,11 @@
+I'm a musician playing gigs. I want to showcase both upcoming and past gigs with:
+- Venue name and location
+- Date and time
+- Ticket links for upcoming shows
+- Photos and videos from performances
+
+I also need:
+- A bio/about section for my artist profile
+- Discography section with albums and singles
+- Music samples (audio clips)
+- Band members showcase with their roles and photos

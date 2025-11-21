@@ -1,0 +1,55 @@
+title: "BandMember"
+icon: "users"
+num: "num"
+status:
+  draft:
+    label: "Draft"
+    text: "This page is in draft mode"
+  listed:
+    label: "Published"
+    text: "This page is published and visible"
+  unlisted:
+    label: "Unlisted"
+    text: "This page is published but not listed"
+options:
+  changeSlug: true
+  changeStatus: true
+  changeTemplate: false
+  delete: true
+  duplicate: true
+  preview: true
+  read: true
+  update: true
+columns:
+  - width: "1/1"
+    sections:
+      main:
+        type: "fields"
+        fields:
+          name:
+            label: "Name"
+            type: "text"
+            translate: true
+            required: true
+            help: "Band member's name"
+            placeholder: "e.g., Jane Smith"
+            width: "1/2"
+          role:
+            label: "Role/Instrument"
+            type: "text"
+            translate: true
+            required: true
+            help: "What they play or do"
+            placeholder: "e.g., Drums"
+            width: "1/2"
+          photo:
+            label: "Photo"
+            type: "files"
+            translate: true
+            help: "Profile photo"
+            width: "1/3"
+          bio:
+            label: "Short Bio"
+            type: "textarea"
+            translate: true
+            help: "Brief bio of the member"

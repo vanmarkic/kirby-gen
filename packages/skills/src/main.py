@@ -5,15 +5,16 @@ Provides HTTP endpoints for AI skills using Claude
 
 import logging
 import time
+from datetime import datetime
 from typing import Dict, Any, Union, Optional
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from src.config import config
 from src.skills.domain_mapping.skill import DomainMappingSkill
-from src.skills.domain_mapping.models import DomainMappingInput
+from src.skills.domain_mapping.models import DomainMappingInput, ContentSchema
 from src.middleware.ip_whitelist import ip_whitelist_middleware
 
 # Configure logging
@@ -50,6 +51,12 @@ class SkillResponse(BaseModel):
     data: Any = None
     error: Optional[Dict[str, Any]] = None
     metadata: Optional[Dict[str, Any]] = None
+
+
+class DomainMappingTestInput(BaseModel):
+    """Simplified input for test-only domain mapping endpoint"""
+    description: str = Field(description="Description of the portfolio/website requirements")
+    profession: Optional[str] = Field(default=None, description="User's profession (optional)")
 
 
 # Global skill instances (initialized lazily)
@@ -146,6 +153,166 @@ async def domain_mapping_skill_endpoint(input_data: DomainMappingInput):
                 "code": "SKILL_ERROR",
                 "message": str(e),
                 "details": {"session_id": input_data.session_id}
+            },
+            metadata={"duration": duration}
+        )
+
+
+@app.post("/skills/domain-mapping-test", response_model=SkillResponse)
+async def domain_mapping_test_endpoint(input_data: DomainMappingTestInput):
+    """
+    TEST ONLY: Direct domain mapping endpoint for integration tests
+    Generates a complete domain model from a single description without conversation
+    """
+    start_time = time.time()
+    skill = get_domain_mapping_skill()
+
+    try:
+        logger.info(f"Processing test domain mapping request: {input_data.description[:100]}...")
+
+        # Create a highly optimized prompt for direct schema generation
+        prompt = f"""You are a domain modeling expert. Generate a complete, production-ready content schema for this portfolio/website:
+
+DESCRIPTION:
+{input_data.description}
+
+{f'PROFESSION: {input_data.profession}' if input_data.profession else ''}
+
+TASK: Return a complete JSON schema with entities, fields, and relationships. Be comprehensive and specific.
+
+REQUIREMENTS:
+1. Identify 3-7 main entities (content types) based on the description
+2. Each entity must have 5-15 relevant fields with proper types
+3. Define relationships between entities (one-to-many, many-to-many, etc.)
+4. Use generic field types: text, textarea, richtext, number, date, image, gallery, select, relation, etc.
+5. Include validation rules and help text where appropriate
+6. Make it production-ready - not placeholder or example data
+
+Return ONLY valid JSON in this exact format:
+{{{{
+  "version": "1.0.0",
+  "entities": [
+    {{{{
+      "id": "entity-id",
+      "name": "EntityName",
+      "pluralName": "EntityNames",
+      "description": "Description of what this entity represents",
+      "displayField": "title",
+      "icon": "icon-name",
+      "sortable": true,
+      "timestamps": true,
+      "slugSource": "title",
+      "fields": [
+        {{{{
+          "id": "field-id",
+          "name": "fieldName",
+          "label": "Field Label",
+          "type": "text",
+          "required": true,
+          "helpText": "Help text",
+          "placeholder": "Placeholder text",
+          "width": "full",
+          "options": {{{{
+            "minLength": 3,
+            "maxLength": 200
+          }}}},
+          "validation": {{{{
+            "required": true
+          }}}}
+        }}}}
+      ]
+    }}}}
+  ],
+  "relationships": [
+    {{{{
+      "id": "rel-id",
+      "type": "one-to-many",
+      "from": "EntityName",
+      "to": "RelatedEntity",
+      "label": "has many",
+      "inversLabel": "belongs to",
+      "required": false,
+      "cascadeDelete": false
+    }}}}
+  ],
+  "metadata": {{{{
+    "name": "Portfolio Schema",
+    "description": "Schema description",
+    "author": "Domain Mapping Test",
+    "createdAt": "{datetime.now().isoformat()}",
+    "updatedAt": "{datetime.now().isoformat()}"
+  }}}}
+}}}}
+
+Generate the schema now. Return ONLY the JSON, no explanation."""
+
+        # Use sync client for simpler error handling
+        if hasattr(skill.client, '__class__') and 'CLI' in skill.client.__class__.__name__:
+            # CLI adapter
+            message = await skill.client.messages.create(
+                model=config.claude_model,
+                max_tokens=8000,
+                temperature=0.3,
+                system="You are a domain modeling expert. Generate complete, production-ready schemas. Return only valid JSON.",
+                messages=[{"role": "user", "content": prompt}]
+            )
+        else:
+            # API client
+            message = await skill.client.messages.create(
+                model=config.claude_model,
+                max_tokens=8000,
+                temperature=0.3,
+                system="You are a domain modeling expert. Generate complete, production-ready schemas. Return only valid JSON.",
+                messages=[{"role": "user", "content": prompt}]
+            )
+
+        # Extract JSON from response
+        response_text = message.content[0].text
+
+        # Try to extract JSON
+        json_str = response_text.strip()
+        if "```json" in response_text:
+            json_start = response_text.find("```json") + 7
+            json_end = response_text.find("```", json_start)
+            json_str = response_text[json_start:json_end].strip()
+        elif "```" in response_text:
+            json_start = response_text.find("```") + 3
+            json_end = response_text.find("```", json_start)
+            json_str = response_text[json_start:json_end].strip()
+
+        # Parse and validate schema
+        import json as json_lib
+        schema_dict = json_lib.loads(json_str)
+
+        # Validate against ContentSchema model
+        content_schema = ContentSchema(**schema_dict)
+
+        duration = time.time() - start_time
+
+        return SkillResponse(
+            success=True,
+            data={
+                "contentSchema": content_schema.model_dump(by_alias=True),
+                "domainModel": content_schema.model_dump(by_alias=True)
+            },
+            metadata={
+                "duration": duration,
+                "test_mode": True,
+                "entities_count": len(content_schema.entities),
+                "relationships_count": len(content_schema.relationships)
+            }
+        )
+
+    except Exception as e:
+        logger.error(f"Domain mapping test failed: {str(e)}", exc_info=True)
+        duration = time.time() - start_time
+
+        return SkillResponse(
+            success=False,
+            error={
+                "code": "TEST_SKILL_ERROR",
+                "message": str(e),
+                "details": {"description": input_data.description[:200]}
             },
             metadata={"duration": duration}
         )
