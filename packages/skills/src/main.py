@@ -14,6 +14,7 @@ from pydantic import BaseModel
 from src.config import config
 from src.skills.domain_mapping.skill import DomainMappingSkill
 from src.skills.domain_mapping.models import DomainMappingInput
+from src.middleware.ip_whitelist import ip_whitelist_middleware
 
 # Configure logging
 logging.basicConfig(
@@ -37,6 +38,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add IP whitelist middleware (FIRST - before other processing)
+app.middleware("http")(ip_whitelist_middleware)
 
 
 # Response models

@@ -98,10 +98,19 @@ Verify these 4 volumes are configured:
 
 In Coolify resource settings, add:
 
-#### Required
+#### Required (CRITICAL)
 ```bash
 CLAUDE_API_KEY=sk-ant-xxxxx
 NODE_ENV=production
+
+# Security (MUST SET IN PRODUCTION)
+AUTH_ENABLED=true
+AUTH_TOKEN=<GENERATE_WITH_openssl_rand_hex_32>
+```
+
+**Generate secure token:**
+```bash
+openssl rand -hex 32
 ```
 
 #### Recommended (match volume paths)
@@ -110,11 +119,16 @@ STORAGE_DIR=/tmp/kirby-gen/storage
 SESSION_DIR=/tmp/kirby-gen/sessions
 DEPLOYMENT_DIR=/tmp/kirby-gen/deployments
 UPLOAD_DIR=/tmp/kirby-gen/uploads
+
+# Skills Server Security
+ALLOWED_IPS=172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+ENABLE_IP_WHITELIST=true
 ```
 
 #### Optional
 ```bash
 PORT=3000
+CORS_ORIGIN=https://your-domain.com
 ```
 
 ### 6. Configure Domain (Optional)
@@ -375,12 +389,35 @@ You can deploy additional apps on the same Hetzner VPS via Coolify:
 
 ## Security Best Practices
 
-1. **Always use HTTPS** - Configure domain for automatic SSL
-2. **Firewall rules** - Only expose ports 80, 443, 22 (SSH)
-3. **Regular updates** - Keep Coolify and Docker updated
-4. **Backup regularly** - Enable automated backups in Coolify
-5. **Rotate API keys** - Update `CLAUDE_API_KEY` periodically
-6. **Monitor logs** - Check for suspicious activity
+**CRITICAL - Before Deployment:**
+
+1. **Enable Authentication**
+   ```bash
+   AUTH_ENABLED=true
+   AUTH_TOKEN=$(openssl rand -hex 32)
+   ```
+
+2. **Configure Anthropic Billing Alerts**
+   - Login to [console.anthropic.com](https://console.anthropic.com)
+   - Settings → Billing → Set alerts at $50, $100, $200, $500
+   - Set hard spending limit if available
+
+3. **Verify Network Isolation**
+   - Skills server should NOT have public port mapping
+   - Test: `curl http://your-server-ip:8001/health` should FAIL
+   - API should reach skills via internal network only
+
+**Ongoing:**
+
+4. **Always use HTTPS** - Configure domain for automatic SSL
+5. **Firewall rules** - Only expose ports 80, 443, 22 (SSH)
+6. **Regular updates** - Keep Coolify and Docker updated
+7. **Backup regularly** - Enable automated backups in Coolify
+8. **Rotate API keys** - Update `CLAUDE_API_KEY` and `AUTH_TOKEN` periodically
+9. **Monitor logs** - Check for suspicious activity
+10. **Review costs** - Monitor Anthropic dashboard weekly
+
+**See [SECURITY.md](SECURITY.md) for comprehensive security guide**
 
 ## Support & Resources
 

@@ -6,6 +6,17 @@ import { AnyZodObject, ZodError } from 'zod';
 import { ValidationError } from '../utils/errors';
 
 /**
+ * Security limits for Claude API inputs
+ * Prevents excessive token usage and potential abuse
+ */
+export const CLAUDE_INPUT_LIMITS = {
+  MAX_MESSAGE_LENGTH: 5000, // characters per message
+  MAX_CONVERSATION_HISTORY: 50, // messages in conversation
+  MAX_CONTENT_FILES: 20, // files per request
+  MAX_FIELD_COUNT: 100, // fields per entity
+} as const;
+
+/**
  * Validate request against a Zod schema
  */
 export function validate(schema: AnyZodObject) {

@@ -10,7 +10,7 @@ import {
   validateDomainModel,
 } from '../controllers/domain-mapping.controller';
 import { asyncHandler } from '../middleware/error-handler';
-import { validateParams, validateBody } from '../middleware/validator';
+import { validateParams, validateBody, CLAUDE_INPUT_LIMITS } from '../middleware/validator';
 import { optionalAuth } from '../middleware/auth';
 
 const router = Router();
@@ -37,8 +37,10 @@ const updateDomainModelSchema = z.object({
   }),
   body: z.object({
     domainModel: z.object({
-      entities: z.array(z.any()),
-      relationships: z.array(z.any()),
+      entities: z.array(z.any()).max(CLAUDE_INPUT_LIMITS.MAX_FIELD_COUNT,
+        'Too many entities. Maximum allowed is ' + CLAUDE_INPUT_LIMITS.MAX_FIELD_COUNT),
+      relationships: z.array(z.any()).max(CLAUDE_INPUT_LIMITS.MAX_FIELD_COUNT,
+        'Too many relationships. Maximum allowed is ' + CLAUDE_INPUT_LIMITS.MAX_FIELD_COUNT),
       schema: z.any(),
     }),
   }),

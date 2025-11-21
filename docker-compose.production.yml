@@ -9,6 +9,8 @@ services:
       - VITE_API_URL=http://api:3000
     ports:
       - "5173:5173"
+    networks:
+      - public
 
   api:
     build:
@@ -17,8 +19,10 @@ services:
     environment:
       - NODE_ENV=production
       - CLAUDE_API_KEY=${CLAUDE_API_KEY}
-      - SKILLS_URL=http://skills:8001
+      - SKILLS_SERVER_URL=http://skills:8001
       - PORT=3000
+      - AUTH_ENABLED=${AUTH_ENABLED:-true}
+      - AUTH_TOKEN=${AUTH_TOKEN}
     ports:
       - "3000:3000"
     volumes:
@@ -26,6 +30,9 @@ services:
       - sessions:/tmp/kirby-gen/sessions
       - deployments:/tmp/kirby-gen/deployments
       - uploads:/tmp/kirby-gen/uploads
+    networks:
+      - public
+      - internal
 
   skills:
     build:
@@ -33,11 +40,22 @@ services:
       dockerfile: Dockerfile.skills
     environment:
       - CLAUDE_API_KEY=${CLAUDE_API_KEY}
-    ports:
-      - "8001:8001"
+      - ALLOWED_IPS=172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+      - ENABLE_IP_WHITELIST=true
+    networks:
+      - internal
+    # No port mapping = not accessible from internet
+    # API server can still reach via internal network
 
 volumes:
   storage:
   sessions:
   deployments:
   uploads:
+
+networks:
+  public:
+    driver: bridge
+  internal:
+    driver: bridge
+    internal: true
