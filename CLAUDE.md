@@ -277,3 +277,15 @@ The Kirby adapter (`packages/kirby-generator/src/adapters/kirby/`) converts gene
 - `site-scaffolder.ts` - Creates Kirby installation structure
 
 When modifying the generator, ensure changes maintain CMS-agnostic input interfaces.
+
+## Kirby Demo Deployment
+
+The system automatically deploys live Kirby demos after blueprint generation:
+
+- **Service**: `KirbyDeploymentService` (DI key: `kirbyDeployment`)
+- **Scheduler**: `CleanupScheduler` (runs daily at 2 AM)
+- **Location**: `packages/api/kirby-demos/demo-{projectId}/`
+- **TTL**: 7 days (configurable)
+- **Quota**: 10 demos max (configurable)
+
+See `docs/features/automatic-kirby-deployment.md` for details.
