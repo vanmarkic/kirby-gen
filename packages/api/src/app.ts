@@ -21,6 +21,14 @@ export function createApp(): Application {
   logger.info('Configuring Express application');
 
   /**
+   * Trust proxy - required when behind reverse proxy (Coolify, nginx, etc.)
+   * This allows Express to correctly identify client IP from X-Forwarded-* headers
+   */
+  if (env.NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+  }
+
+  /**
    * Security middleware
    */
   app.use(helmet({
