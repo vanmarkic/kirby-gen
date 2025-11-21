@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { apiClient } from '../api/client';
 
 export interface AuthContextType {
@@ -14,16 +14,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const AUTH_TOKEN_KEY = 'auth_token';
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [token, setToken] = useState<string | null>(null);
+  // Initialize token from localStorage synchronously (lazy initialization)
+  const [token, setToken] = useState<string | null>(() => {
+    return localStorage.getItem(AUTH_TOKEN_KEY);
+  });
   const [isLoading, setIsLoading] = useState(false);
-
-  // Initialize auth state from localStorage
-  useEffect(() => {
-    const storedToken = localStorage.getItem(AUTH_TOKEN_KEY);
-    if (storedToken) {
-      setToken(storedToken);
-    }
-  }, []);
 
   const login = async (password: string): Promise<void> => {
     setIsLoading(true);
