@@ -15,7 +15,7 @@ import {
 } from '../controllers/project.controller';
 import { asyncHandler } from '../middleware/error-handler';
 import { validateParams, validateQuery, validateBody } from '../middleware/validator';
-import { authenticate, optionalAuth } from '../middleware/auth';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
 
@@ -58,14 +58,14 @@ const updateProjectSchema = z.object({
 // POST /api/projects - Create new project
 router.post(
   '/',
-  optionalAuth,
+  authenticate,
   asyncHandler(createProject)
 );
 
 // GET /api/projects - List all projects
 router.get(
   '/',
-  optionalAuth,
+  authenticate,
   validateQuery(listProjectsSchema.shape.query),
   asyncHandler(listProjects)
 );
@@ -73,7 +73,7 @@ router.get(
 // GET /api/projects/:projectId - Get project by ID
 router.get(
   '/:projectId',
-  optionalAuth,
+  authenticate,
   validateParams(projectIdSchema.shape.params),
   asyncHandler(getProject)
 );
@@ -81,7 +81,7 @@ router.get(
 // PUT/PATCH /api/projects/:projectId - Update project
 router.put(
   '/:projectId',
-  optionalAuth,
+  authenticate,
   validateParams(updateProjectSchema.shape.params),
   validateBody(updateProjectSchema.shape.body),
   asyncHandler(updateProject)
@@ -89,7 +89,7 @@ router.put(
 
 router.patch(
   '/:projectId',
-  optionalAuth,
+  authenticate,
   validateParams(updateProjectSchema.shape.params),
   validateBody(updateProjectSchema.shape.body),
   asyncHandler(updateProject)
@@ -106,7 +106,7 @@ router.delete(
 // GET /api/projects/:projectId/status - Get project status
 router.get(
   '/:projectId/status',
-  optionalAuth,
+  authenticate,
   validateParams(projectIdSchema.shape.params),
   asyncHandler(getProjectStatus)
 );
@@ -114,7 +114,7 @@ router.get(
 // POST /api/projects/:projectId/domain-mapping/init - Initialize domain mapping
 router.post(
   '/:projectId/domain-mapping/init',
-  optionalAuth,
+  authenticate,
   validateParams(projectIdSchema.shape.params),
   asyncHandler(initializeDomainMapping)
 );
@@ -122,7 +122,7 @@ router.post(
 // POST /api/projects/:projectId/domain-mapping/message - Send message in domain mapping
 router.post(
   '/:projectId/domain-mapping/message',
-  optionalAuth,
+  authenticate,
   validateParams(projectIdSchema.shape.params),
   asyncHandler(handleDomainMappingMessage)
 );
