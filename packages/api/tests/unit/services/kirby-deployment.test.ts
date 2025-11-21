@@ -167,4 +167,43 @@ describe('KirbyDeploymentService', () => {
       expect(await fs.pathExists(demoPath)).toBe(false);
     });
   });
+
+  describe('cleanupOldDemos', () => {
+    it('should archive demos older than TTL', async () => {
+      jest.useFakeTimers();
+
+      mockStorage.listFiles.mockResolvedValue([]);
+      jest.spyOn(service as any, 'downloadKirby').mockResolvedValue(undefined);
+      jest.spyOn(service as any, 'startPHPServer').mockResolvedValue(9000);
+      jest.spyOn(service as any, 'stopPHPServer').mockResolvedValue(undefined);
+
+      await service.deploy('old-project');
+
+      // Fast forward 8 days (past TTL of 7 days)
+      jest.advanceTimersByTime(8 * 24 * 60 * 60 * 1000);
+
+      const result = await service.cleanupOldDemos();
+
+      expect(result.archived).toContain('old-project');
+      expect(mockEmail.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          subject: 'Demo Site Archived (TTL Expired)'
+        })
+      );
+
+      jest.useRealTimers();
+    });
+
+    it('should not archive demos within TTL', async () => {
+      mockStorage.listFiles.mockResolvedValue([]);
+      jest.spyOn(service as any, 'downloadKirby').mockResolvedValue(undefined);
+      jest.spyOn(service as any, 'startPHPServer').mockResolvedValue(9000);
+
+      await service.deploy('new-project');
+
+      const result = await service.cleanupOldDemos();
+
+      expect(result.archived).not.toContain('new-project');
+    });
+  });
 });

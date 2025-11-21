@@ -181,11 +181,42 @@ Deployed: ${oldest.deployedAt.toISOString()}`
   }
 
   async cleanupOldDemos(): Promise<KirbyCleanupResult> {
-    // Stub - will implement in next task
+    logger.info('Running demo cleanup...');
+
+    const archived: string[] = [];
+    const emailsSent: string[] = [];
+    const now = new Date();
+
+    for (const [projectId, deployment] of this.deployments) {
+      if (!deployment.isActive) continue;
+
+      if (now > deployment.expiresAt) {
+        logger.info(`TTL expired for demo: ${projectId}`);
+
+        // Send notification email
+        await this.email.send({
+          to: 'admin@yourdomain.com',
+          subject: 'Demo Site Archived (TTL Expired)',
+          body: `Your demo site has been archived after ${this.ttlDays} days.
+Project: ${projectId}
+URL: ${deployment.url}
+Deployed: ${deployment.deployedAt.toISOString()}
+Data is safely backed up in storage.`
+        });
+
+        emailsSent.push(projectId);
+
+        await this.archive(projectId);
+        archived.push(projectId);
+      }
+    }
+
+    logger.info(`Cleanup complete. Archived: ${archived.length}`);
+
     return {
-      archived: [],
+      archived,
       quotaReached: false,
-      emailsSent: []
+      emailsSent
     };
   }
 }
