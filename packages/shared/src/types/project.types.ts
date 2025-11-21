@@ -309,11 +309,52 @@ export interface ProjectError {
 
 /**
  * Chat message in domain mapping conversation
+ * @deprecated Use ConversationTurn instead
  */
 export interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: string;
+}
+
+/**
+ * Single conversation turn (user or assistant message)
+ */
+export interface ConversationTurn {
+  id: string;                    // Unique turn ID
+  timestamp: Date;               // When message was sent
+  role: 'user' | 'assistant' | 'system';
+  content: string;               // Message content
+  metadata?: {
+    tokensUsed?: number;         // Token count (for cost tracking)
+    model?: string;              // Claude model used
+    latencyMs?: number;          // Response time
+  };
+}
+
+/**
+ * Conversation session for a specific workflow phase
+ */
+export interface ConversationSession {
+  projectId: string;
+  phase: ProjectStatus;          // Phase this conversation belongs to
+  sessionId: string;             // Unique session identifier
+  startedAt: Date;
+  completedAt?: Date;
+  turns: ConversationTurn[];     // All conversation turns in order
+  status: 'active' | 'completed' | 'abandoned';
+}
+
+/**
+ * Metadata about generated artifacts
+ */
+export interface GeneratedArtifacts {
+  blueprints: FileReference[];    // Kirby blueprint YAML files
+  templates: FileReference[];     // PHP/Twig templates
+  content: FileReference[];       // Kirby .txt content files
+  assets: FileReference[];        // Processed images, CSS, etc.
+  generatedAt: Date;              // When artifacts were generated
+  cmsAdapter: string;             // 'kirby' | 'strapi' | etc.
 }
 
 /**
