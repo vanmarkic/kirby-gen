@@ -6,7 +6,14 @@ import multer from 'multer';
 import path from 'path';
 import { promises as fs } from 'fs';
 import { randomBytes } from 'crypto';
-import { IStorageService, FileReference, SERVICE_KEYS } from '@kirby-gen/shared';
+import {
+  IStorageService,
+  FileReference,
+  SERVICE_KEYS,
+  ALLOWED_MIME_TYPES,
+  ALLOWED_FILE_TYPES_DISPLAY,
+  MAX_FILES_PER_UPLOAD,
+} from '@kirby-gen/shared';
 import { getService } from '../config/di-setup';
 import { ResponseBuilder } from '../utils/response';
 import { NotFoundError, FileUploadError, ValidationError } from '../utils/errors';
@@ -38,24 +45,10 @@ const storage = multer.diskStorage({
  * File filter
  */
 const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  // Allowed MIME types
-  const allowedMimes = [
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'text/plain',
-    'text/markdown',
-    'image/jpeg',
-    'image/png',
-    'image/gif',
-    'image/svg+xml',
-    'application/json',
-  ];
-
-  if (allowedMimes.includes(file.mimetype)) {
+  if (ALLOWED_MIME_TYPES.includes(file.mimetype as any)) {
     cb(null, true);
   } else {
-    cb(new FileUploadError(`File type not allowed: ${file.mimetype}`));
+    cb(new FileUploadError(`File type not allowed: ${file.mimetype}. Allowed types: ${ALLOWED_FILE_TYPES_DISPLAY}`));
   }
 };
 
@@ -67,7 +60,7 @@ export const upload = multer({
   fileFilter,
   limits: {
     fileSize: env.MAX_FILE_SIZE,
-    files: 20,
+    files: MAX_FILES_PER_UPLOAD,
   },
 });
 

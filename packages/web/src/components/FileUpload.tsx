@@ -1,7 +1,14 @@
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, X, FileImage, FileText } from 'lucide-react';
+import { Upload, X, FileImage, FileText, AlertCircle } from 'lucide-react';
 import clsx from 'clsx';
+import {
+  FILE_ACCEPT_CONFIG,
+  MAX_FILE_SIZE,
+  MAX_FILES_PER_UPLOAD,
+  formatFileSize,
+  ALLOWED_FILE_TYPES_DISPLAY,
+} from '@kirby-gen/shared';
 
 interface FileUploadProps {
   files: File[];
@@ -14,9 +21,9 @@ interface FileUploadProps {
 export default function FileUpload({
   files,
   onFilesChange,
-  accept,
-  maxSize = 10 * 1024 * 1024, // 10MB default
-  maxFiles = 50,
+  accept = FILE_ACCEPT_CONFIG,
+  maxSize = MAX_FILE_SIZE,
+  maxFiles = MAX_FILES_PER_UPLOAD,
 }: FileUploadProps) {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -37,12 +44,6 @@ export default function FileUpload({
   const removeFile = (index: number) => {
     const newFiles = files.filter((_, i) => i !== index);
     onFilesChange(newFiles);
-  };
-
-  const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   const getFileIcon = (file: File) => {
@@ -77,11 +78,19 @@ export default function FileUpload({
 
       {fileRejections.length > 0 && (
         <div className="file-errors">
+          <div className="error-header">
+            <AlertCircle size={20} />
+            <h4>Some files were rejected</h4>
+          </div>
           {fileRejections.map(({ file, errors }) => (
             <div key={file.name} className="file-error">
               <strong>{file.name}</strong>
               {errors.map((error) => (
-                <p key={error.code}>{error.message}</p>
+                <p key={error.code}>
+                  {error.code === 'file-invalid-type'
+                    ? `Invalid file type. Allowed: ${ALLOWED_FILE_TYPES_DISPLAY}`
+                    : error.message}
+                </p>
               ))}
             </div>
           ))}
