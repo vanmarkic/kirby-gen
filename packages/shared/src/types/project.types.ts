@@ -13,6 +13,7 @@ export interface ProjectData {
 
   // Domain mapping phase
   domainModel?: DomainModel;
+  schema?: DomainModel; // Alias for domainModel (used by web components)
 
   // Content structuring phase
   structuredContent?: StructuredContent;
@@ -25,6 +26,7 @@ export interface ProjectData {
 
   // Generation phase
   generated?: GeneratedSite;
+  deployment?: GeneratedSite; // Alias for generated (used by web components)
 
   // Metadata
   status: ProjectStatus;
@@ -65,6 +67,10 @@ export interface BrandingAssets {
   colors?: ColorPalette;
   fonts?: FontDefinition[];
   guidelines?: FileReference;
+  // Additional properties for web form
+  fontFamily?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
 }
 
 export interface ColorPalette {
@@ -142,9 +148,11 @@ export interface FieldValidation {
 
 export interface Relationship {
   id: string;
+  name: string; // Relationship name for display
   type: 'one-to-one' | 'one-to-many' | 'many-to-many';
   from: string; // Entity ID
   to: string; // Entity ID
+  targetEntity: string; // Target entity name (alias for 'to')
   label: string;
   inversLabel?: string;
 }
@@ -167,6 +175,9 @@ export interface ContentItem {
 export interface ContentMetadata {
   createdAt: Date;
   updatedAt: Date;
+  publishedAt?: Date; // When content was published
+  author?: string; // Content author
+  slug?: string; // URL slug
   source?: string; // Original file reference
   status: 'draft' | 'published';
 }
@@ -254,12 +265,38 @@ export interface BlueprintField {
 }
 
 export interface GeneratedSite {
+  // CMS-agnostic properties
+  cmsName: string;
+  cmsVersion: string;
   sitePath: string;
-  gitRepo: string;
-  deploymentUrl: string;
-  deploymentId: string;
-  kirbyVersion: string;
-  generatedAt: Date;
+  entryPoint?: string; // Main file to run/serve
+  adminUrl?: string; // Admin panel URL pattern
+  panelUrl?: string; // CMS panel/admin URL
+  files?: GeneratedFile[];
+  postInstallSteps?: string[]; // Instructions for manual steps
+
+  // Credentials for CMS access
+  credentials?: {
+    username?: string;
+    password?: string;
+    email?: string;
+    [key: string]: any;
+  };
+
+  // Legacy Kirby-specific properties (for backwards compatibility)
+  gitRepo?: string;
+  deploymentUrl?: string;
+  deploymentId?: string;
+  kirbyVersion?: string; // Alias for cmsVersion when CMS is Kirby
+  generatedAt?: Date;
+}
+
+// Helper type for GeneratedFile (used by GeneratedSite.files)
+export interface GeneratedFile {
+  path: string;
+  content: string | Buffer;
+  encoding?: 'utf-8' | 'binary';
+  executable?: boolean;
 }
 
 export interface ProjectError {

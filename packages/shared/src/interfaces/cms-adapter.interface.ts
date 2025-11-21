@@ -3,6 +3,7 @@ import {
   StructuredContentCollection,
   DesignSystemSchema,
 } from '../types/cms-agnostic.types';
+import { GeneratedSite, GeneratedFile } from '../types/project.types';
 
 /**
  * CMS Adapter Interface
@@ -113,28 +114,7 @@ export interface CMSDesignOutput {
   };
 }
 
-/**
- * Generated File
- */
-export interface GeneratedFile {
-  path: string; // Relative path within CMS structure
-  content: string | Buffer;
-  encoding?: 'utf-8' | 'binary';
-  executable?: boolean;
-}
-
-/**
- * Generated Site
- */
-export interface GeneratedSite {
-  cmsName: string;
-  cmsVersion: string;
-  sitePath: string;
-  entryPoint?: string; // Main file to run/serve
-  adminUrl?: string; // Admin panel URL pattern
-  files: GeneratedFile[];
-  postInstallSteps?: string[]; // Instructions for manual steps
-}
+// GeneratedFile and GeneratedSite are now imported from project.types above
 
 /**
  * Validation Result

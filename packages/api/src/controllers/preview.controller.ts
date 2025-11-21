@@ -31,10 +31,11 @@ export async function getPreviewUrl(req: Request, res: Response): Promise<void> 
   }
 
   const deploymentService = getService<IDeploymentService>(SERVICE_KEYS.DEPLOYMENT);
-  const deployment = await deploymentService.getStatus(project.generated.deploymentId);
+  const deploymentId = project.generated.deploymentId || '';
+  const deployment = await deploymentService.getStatus(deploymentId);
 
   if (!deployment) {
-    throw new NotFoundError('Deployment', project.generated.deploymentId);
+    throw new NotFoundError('Deployment', deploymentId);
   }
 
   res.json(
@@ -172,7 +173,8 @@ export async function restartDeployment(req: Request, res: Response): Promise<vo
   const deploymentService = getService<IDeploymentService>(SERVICE_KEYS.DEPLOYMENT);
 
   // Stop existing deployment
-  await deploymentService.stop(project.generated.deploymentId);
+  const deploymentId = project.generated.deploymentId || '';
+  await deploymentService.stop(deploymentId);
 
   // Start new deployment
   const deployment = await deploymentService.deploy(projectId, project.generated.sitePath);

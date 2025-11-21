@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { websocketClient } from '../api/websocket';
 import { useProgressStore } from '../stores/progressStore';
 import type { ProgressUpdate, LogEntry } from '../api/websocket';

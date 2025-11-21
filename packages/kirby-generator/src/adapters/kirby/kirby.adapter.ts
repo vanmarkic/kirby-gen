@@ -164,8 +164,15 @@ export class KirbyCMSAdapter implements ICMSAdapter {
         continue;
       }
 
+      // Convert CMSContentItem to ContentItem (add title/slug from metadata)
+      const convertedItems = (items as any[]).map((item: any) => ({
+        ...item,
+        title: item.fields?.title || item.metadata?.slug || item.id,
+        slug: item.metadata?.slug || item.id,
+      }));
+
       // Generate content files
-      const contentFiles = this.contentGenerator.generateContentFiles(items, entitySchema);
+      const contentFiles = this.contentGenerator.generateContentFiles(convertedItems as any, entitySchema);
 
       contentFiles.forEach((contentFile) => {
         files.push({

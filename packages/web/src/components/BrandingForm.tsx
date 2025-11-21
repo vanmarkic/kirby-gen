@@ -30,6 +30,7 @@ export default function BrandingForm({
 
   // Dynamically load Google Font when font family changes
   useEffect(() => {
+    if (!branding.fontFamily) return;
     const fontName = branding.fontFamily.replace(/ /g, '+');
     const linkId = 'google-font-branding';
 

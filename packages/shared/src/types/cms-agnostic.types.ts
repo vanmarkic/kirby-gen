@@ -198,11 +198,11 @@ export interface RelationshipSchema {
  */
 export interface StructuredContentCollection {
   schema: ContentSchema;
-  content: Record<string, ContentItem[]>; // entityId -> items
-  metadata: ContentMetadata;
+  content: Record<string, CMSContentItem[]>; // entityId -> items
+  metadata: CMSCollectionMetadata;
 }
 
-export interface ContentItem {
+export interface CMSContentItem {
   id: string;
   entityType: string; // Reference to EntitySchema.id
   fields: Record<string, any>; // field.name -> value
@@ -225,7 +225,7 @@ export interface ContentSource {
   originalFormat?: string;
 }
 
-export interface ContentMetadata {
+export interface CMSCollectionMetadata {
   generatedAt: Date;
   generator: string;
   version: string;

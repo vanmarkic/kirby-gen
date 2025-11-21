@@ -314,6 +314,8 @@ export class WorkflowOrchestrator extends EventEmitter {
 
       // Update project
       project.generated = {
+        cmsName: 'kirby',
+        cmsVersion: '4.0.0',
         sitePath: outputPath,
         gitRepo,
         deploymentUrl: '', // Will be set in deployment phase
