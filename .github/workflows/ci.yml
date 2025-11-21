@@ -21,8 +21,24 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
       - name: Install dependencies
         run: npm ci
+
+      - name: Setup Python skills environment
+        run: |
+          cd packages/skills
+          python -m venv venv
+          . venv/bin/activate
+          pip install mypy
+
+      - name: Build shared package first
+        run: npm run build --workspace=packages/shared
 
       - name: Type check
         run: npm run typecheck

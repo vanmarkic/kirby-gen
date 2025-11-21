@@ -550,7 +550,7 @@ export class LocalStorageService implements IStorageService {
         if (session.completedAt) {
           session.completedAt = new Date(session.completedAt);
         }
-        session.turns = session.turns.map(t => ({
+        session.turns = session.turns.map((t: any) => ({
           ...t,
           timestamp: new Date(t.timestamp),
         }));

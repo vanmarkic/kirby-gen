@@ -11,7 +11,7 @@
     "test:watch": "pytest-watch",
     "lint": "ruff check src tests",
     "format": "black src tests",
-    "typecheck": "mypy src",
+    "typecheck": "bash -c 'source venv/bin/activate 2>/dev/null || true && mypy src'",
     "setup": "python -m venv venv && . venv/bin/activate && pip install -r requirements.txt"
   }
 }

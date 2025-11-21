@@ -164,9 +164,9 @@ export class BlueprintGenerator {
 
     // Group fields by category
     const contentFields = entity.fields.filter(
-      (f) => !['image', 'file', 'gallery', 'files'].includes(f.type)
+      (f: any) => !['image', 'file', 'gallery', 'files'].includes(f.type)
     );
-    const mediaFields = entity.fields.filter((f) =>
+    const mediaFields = entity.fields.filter((f: any) =>
       ['image', 'file', 'gallery', 'files'].includes(f.type)
     );
 
