@@ -12,7 +12,7 @@ dotenv.config();
  */
 const envSchema = z.object({
   // Server
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  NODE_ENV: z.enum(['local', 'development', 'production', 'test']).default('development'),
   PORT: z.string().default('3001').transform(Number),
   HOST: z.string().default('0.0.0.0'),
 
@@ -86,6 +86,11 @@ try {
 }
 
 export { env };
+
+/**
+ * Check if running in local mode
+ */
+export const isLocal = () => env.NODE_ENV === 'local';
 
 /**
  * Check if running in production
