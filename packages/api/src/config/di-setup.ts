@@ -68,7 +68,13 @@ export function setupDependencyInjection(): void {
       () =>
         new KirbyDeploymentService(
           container.resolve(SERVICE_KEYS.STORAGE),
-          container.resolve(SERVICE_KEYS.EMAIL)
+          container.resolve(SERVICE_KEYS.EMAIL),
+          {
+            demosDir: env.KIRBY_DEMOS_DIR,
+            basePort: env.KIRBY_DEMO_BASE_PORT,
+            ttlDays: env.KIRBY_DEMO_TTL_DAYS,
+            maxDemos: env.KIRBY_DEMO_MAX_DEMOS,
+          }
         ),
       true
     );

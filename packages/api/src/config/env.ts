@@ -65,6 +65,16 @@ const envSchema = z.object({
   CLAUDE_USE_CLI: z.string().default('false').transform((val) => val === 'true'),
   CLAUDE_CLI_SCRIPT: z.string().default('./scripts/claude-cli.sh'),
   CLAUDE_CLI_OUTPUT_DIR: z.string().default('./data/claude-output'),
+
+  // Kirby Demo Settings
+  KIRBY_DEMO_TTL_DAYS: z.string().default('7').transform(Number),
+  KIRBY_DEMO_MAX_DEMOS: z.string().default('10').transform(Number),
+  KIRBY_DEMO_BASE_PORT: z.string().default('8080').transform(Number),
+  KIRBY_DEMOS_DIR: z.string().default('./data/kirby-demos'),
+
+  // Email Settings
+  EMAIL_SERVICE: z.string().default('local'),
+  EMAIL_FROM: z.string().default('noreply@yourdomain.com'),
 });
 
 /**
