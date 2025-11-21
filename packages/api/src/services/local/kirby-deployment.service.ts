@@ -48,6 +48,9 @@ export class KirbyDeploymentService implements IKirbyDeploymentService {
     // Download Kirby (stub for now)
     await this.downloadKirby(demoPath);
 
+    // Copy blueprints
+    await this.copyBlueprints(projectId, demoPath);
+
     // Start PHP server (stub for now)
     const port = await this.startPHPServer(projectId, demoPath);
 
@@ -84,6 +87,25 @@ export class KirbyDeploymentService implements IKirbyDeploymentService {
   private async startPHPServer(projectId: string, demoPath: string): Promise<number> {
     // Stub - will implement in next task
     return this.basePort;
+  }
+
+  private async copyBlueprints(projectId: string, demoPath: string): Promise<void> {
+    logger.info(`Copying blueprints for project: ${projectId}`);
+
+    const blueprintsDir = path.join(demoPath, 'site', 'blueprints', 'pages');
+    await fs.ensureDir(blueprintsDir);
+
+    // Get all files and filter for blueprints
+    const allFiles = await this.storage.listFiles(projectId);
+    const blueprintFiles = allFiles.filter(file => file.startsWith('blueprints/'));
+
+    for (const file of blueprintFiles) {
+      const content = await this.storage.downloadFile(projectId, file);
+      // Extract just the filename (remove 'blueprints/' prefix)
+      const filename = path.basename(file);
+      await fs.writeFile(path.join(blueprintsDir, filename), content);
+      logger.info(`  Copied blueprint: ${filename}`);
+    }
   }
 
   private async saveDeploymentMetadata(demoPath: string, info: KirbyDeploymentInfo): Promise<void> {

@@ -72,5 +72,35 @@ describe('KirbyDeploymentService', () => {
       expect(result.port).toBe(9000);
       expect(result.deployedAt).toBeInstanceOf(Date);
     });
+
+    it('should copy blueprints from storage', async () => {
+      const projectId = 'test-blueprints';
+      const allFiles = ['blueprints/gig.yml', 'blueprints/artist.yml', 'blueprints/release.yml', 'other-file.txt'];
+
+      mockStorage.listFiles.mockResolvedValue(allFiles);
+      mockStorage.downloadFile.mockResolvedValue(Buffer.from('title: Test'));
+
+      jest.spyOn(service as any, 'downloadKirby').mockResolvedValue(undefined);
+      jest.spyOn(service as any, 'startPHPServer').mockResolvedValue(9000);
+
+      await service.deploy(projectId);
+
+      expect(mockStorage.listFiles).toHaveBeenCalledWith(projectId);
+      // Should only download blueprint files (3 files, not 4)
+      expect(mockStorage.downloadFile).toHaveBeenCalledTimes(3);
+      expect(mockStorage.downloadFile).toHaveBeenCalledWith(projectId, 'blueprints/gig.yml');
+      expect(mockStorage.downloadFile).toHaveBeenCalledWith(projectId, 'blueprints/artist.yml');
+      expect(mockStorage.downloadFile).toHaveBeenCalledWith(projectId, 'blueprints/release.yml');
+
+      // Verify blueprints are written
+      const demoPath = path.join(testDemosDir, `demo-${projectId}`);
+      const blueprintPath = path.join(demoPath, 'site', 'blueprints', 'pages');
+
+      const files = await fs.readdir(blueprintPath);
+      expect(files).toHaveLength(3);
+      expect(files).toContain('gig.yml');
+      expect(files).toContain('artist.yml');
+      expect(files).toContain('release.yml');
+    });
   });
 });
