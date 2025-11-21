@@ -3,6 +3,7 @@
  * Combines all routes into a single router
  */
 import { Router } from 'express';
+import authRoutes from './auth.routes';
 import projectRoutes from './project.routes';
 import fileRoutes from './file.routes';
 import generationRoutes from './generation.routes';
@@ -53,6 +54,7 @@ router.get('/info', (req, res) => {
 /**
  * Register all routes
  */
+router.use('/auth', authRoutes);
 router.use('/projects', projectRoutes);
 router.use('/projects', fileRoutes);
 router.use('/projects', generationRoutes);
