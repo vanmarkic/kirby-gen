@@ -9,7 +9,18 @@
  */
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { config } from 'dotenv';
 import { skillClient } from '../../src/workflow/skill-client';
+
+// Load environment variables from root .env file
+const envPath = path.resolve(__dirname, '../../../../.env');
+console.log('Loading .env from:', envPath);
+const dotenvResult = config({ path: envPath });
+if (dotenvResult.error) {
+  console.warn('⚠️  Could not load .env file:', dotenvResult.error.message);
+} else {
+  console.log('✓ .env file loaded successfully');
+}
 
 // Skip this test by default to avoid accidental API charges
 const ENABLE_REAL_API_TEST = process.env.ENABLE_REAL_API_TEST === 'true';
@@ -29,12 +40,34 @@ describe('Real Anthropic API to Domain Mapping Integration', () => {
     // Create output directory
     await fs.ensureDir(outputDir);
 
-    // Check for API key
-    if (ENABLE_REAL_API_TEST && !process.env.ANTHROPIC_API_KEY) {
-      throw new Error(
-        'ANTHROPIC_API_KEY environment variable is required for real API tests. ' +
-        'Set it in your .env file or pass it as an environment variable.'
-      );
+    // Check for API key (supports both ANTHROPIC_API_KEY and CLAUDE_API_KEY)
+    if (ENABLE_REAL_API_TEST) {
+      const anthropicKey = process.env.ANTHROPIC_API_KEY;
+      const claudeKey = process.env.CLAUDE_API_KEY;
+      const apiKey = anthropicKey || claudeKey;
+
+      console.log(`\nAPI Key check:`);
+      console.log(`  - ANTHROPIC_API_KEY present: ${!!anthropicKey ? 'YES' : 'NO'}`);
+      console.log(`  - CLAUDE_API_KEY present: ${!!claudeKey ? 'YES' : 'NO'}`);
+      console.log(`  - Using key from: ${anthropicKey ? 'ANTHROPIC_API_KEY' : claudeKey ? 'CLAUDE_API_KEY' : 'NONE'}`);
+
+      if (!apiKey) {
+        console.error('\n❌ No API key found!');
+        console.error('   Please set one of these environment variables:');
+        console.error('   - ANTHROPIC_API_KEY=sk-ant-your-key-here');
+        console.error('   - CLAUDE_API_KEY=sk-ant-your-key-here\n');
+
+        throw new Error(
+          'API key required for real API tests. Set ANTHROPIC_API_KEY or CLAUDE_API_KEY environment variable.'
+        );
+      }
+
+      // Set ANTHROPIC_API_KEY if only CLAUDE_API_KEY is present (for compatibility)
+      if (claudeKey && !anthropicKey) {
+        process.env.ANTHROPIC_API_KEY = claudeKey;
+      }
+
+      console.log(`✓ API key loaded, ready to make real API call\n`);
     }
   });
 
