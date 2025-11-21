@@ -1,0 +1,146 @@
+You are an expert in domain modeling and content structure analysis. Your role is to help users discover and define the entities (content types) in their portfolio.
+
+Your task is to:
+1. Understand what type of content the user wants to showcase (projects, articles, case studies, etc.)
+2. Identify the key entities and their fields
+3. Build a clear domain model with entities and relationships
+4. Be concise and conversational
+5. Ask clarifying questions when needed
+
+When you've gathered enough information, provide a structured schema with entities, their fields, and relationships.
+
+Previous conversation:
+assistant: Hello! I'll help you discover the entities in your portfolio (powered by Claude CLI). Based on your uploaded content, what type of work would you like to showcase? For example: projects, articles, case studies, photography, designs, etc.
+user: i do gigs and websites
+assistant: Great! So you do both **gigs** (freelance work, one-off projects) and **websites** (web development/design projects). Let me help you structure this.
+
+A few questions to build the right model:
+
+**1. Are gigs and websites separate types of work, or is "website" a type of gig?**
+   - Option A: Separate (e.g., "Gigs" = design work, consulting; "Websites" = web projects)
+   - Option B: Related (e.g., all work items are "Gigs", but some gigs are website projects)
+
+**2. What information do you typically show for each?**
+   - Title/name of the project?
+   - Description or case study?
+   - Client name?
+   - Technologies/tools used?
+   - Images/screenshots?
+   - Date or timeline?
+   - Link to live site (for websites)?
+   - Anything else important?
+
+**3. Do you categorize your work further?**
+   - By industry (e.g., e-commerce, portfolio sites, corporate)?
+   - By type (e.g., design vs development, frontend vs full-stack)?
+   - By size (small gig vs large project)?
+
+Let me know and I'll build a clear domain model for your portfolio!
+user: music gigs, and websites. for music gigs : event, date, location, recording, lineup, fee. for website: client, technology, descripion,date.
+assistant: Perfect! I now have a clear picture. You have **two distinct types of work**: music gigs and website projects.
+
+Let me confirm the structure:
+
+## **Entities**
+
+### 1. **Music Gig**
+- Event name
+- Date
+- Location
+- Recording (audio/video link or file?)
+- Lineup (your role + other performers?)
+- Fee
+
+### 2. **Website**
+- Client name
+- Technology/stack
+- Description
+- Date (launch date or project date?)
+
+---
+
+### Quick clarifications:
+
+1. **Recording** - Is this a link (YouTube, SoundCloud) or an uploaded file?
+2. **Lineup** - Should this be a text field or structured (e.g., list of band members with roles)?
+3. **Technology** - Free text or predefined tags (React, WordPress, etc.)?
+4. **Do you want images/photos for either type?** (e.g., venue photos for gigs, screenshots for websites)
+5. **Any relationships?** For example:
+   - Multiple gigs at the same venue?
+   - Multiple websites for the same client?
+   - Shared technologies across websites?
+
+Once you confirm, I'll generate the final domain model schema!
+user: 1. to soundcloud.2. list of band 3.predefined tags4.yes.5.yes
+assistant: Perfect! I've got all the details. Here's your **final domain model**:
+
+---
+
+## **Entities & Fields**
+
+### **1. Music Gig**
+- **Event** (text) - Name of the event/performance
+- **Date** (date)
+- **Location** (text) - Venue name or address
+- **Recording** (URL) - SoundCloud link
+- **Lineup** (list) - Band members/performers
+- **Fee** (number) - Payment received
+- **Photos** (images) - Event/venue photos
+
+### **2. Website**
+- **Client** (text) - Client name
+- **Technology** (tags) - Predefined tech stack (React, WordPress, Node.js, etc.)
+- **Description** (text) - Project overview
+- **Date** (date) - Launch or completion date
+- **Screenshots** (images) - Project visuals
+
+---
+
+## **Relationships**
+
+### **3. Venue** (for music gigs)
+- **Name** (text)
+- **Location** (text)
+- **Gigs** → Many-to-one relationship (multiple gigs can happen at the same venue)
+
+### **4. Client** (for websites)
+- **Name** (text)
+- **Websites** → One-to-many relationship (a client can have multiple websites)
+
+### **5. Technology** (shared across websites)
+- **Name** (text) - e.g., "React", "WordPress", "Tailwind CSS"
+- **Websites** → Many-to-many relationship (websites can use multiple technologies)
+
+---
+
+## **Structure Summary**
+
+```
+Music Gig
+├─ Event, Date, Location, Recording (SoundCloud), Lineup, Fee, Photos
+└─ Belongs to → Venue
+
+Website
+├─ Client, Technology (tags), Description, Date, Screenshots
+├─ Belongs to → Client
+└─ Uses → Technology (many-to-many)
+
+Venue
+└─ Has many → Music Gigs
+
+Client
+└─ Has many → Websites
+
+Technology
+└─ Used by many → Websites
+```
+
+---
+
+Does this structure look good? If yes, I can now generate the **CMS-agnostic schema** that the system will use to build your portfolio!
+user: yes !
+assistant: I'm having trouble connecting to the AI service. Please try again in a moment.
+
+User: it should be ok now
+
+Assistant:
