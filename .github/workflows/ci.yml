@@ -1,0 +1,110 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  validate-quick:
+    name: Quick Validation (Typecheck, Lint)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+  validate-full:
+    name: Full Validation (Build, Test, Smoke)
+    needs: validate-quick
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: npm run setup
+
+      - name: Build all packages
+        run: npm run build
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Run integration tests
+        run: npm run test:integration
+
+      - name: Start services for smoke tests
+        run: |
+          npm run dev:api &
+          API_PID=$!
+          echo "API_PID=$API_PID" >> $GITHUB_ENV
+          # Wait for API to be ready
+          timeout 60 bash -c 'until curl -f http://localhost:3001/health; do sleep 2; done'
+        env:
+          NODE_ENV: test
+          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+          AUTH_ENABLED: false
+
+      - name: Run smoke tests
+        run: npm run test:smoke:local
+        env:
+          API_URL: http://localhost:3001
+
+      - name: Cleanup
+        if: always()
+        run: |
+          if [ ! -z "$API_PID" ]; then
+            kill $API_PID || true
+          fi
+
+  deploy:
+    name: Deploy to Coolify
+    needs: validate-full
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Coolify Deployment
+        run: |
+          response=$(curl -X GET "${{ secrets.COOLIFY_WEBHOOK_URL }}" -w "%{http_code}" -o /dev/null -s)
+          if [ $response -eq 200 ] || [ $response -eq 201 ] || [ $response -eq 204 ]; then
+            echo "✅ Coolify deployment triggered successfully"
+          else
+            echo "❌ Failed to trigger Coolify deployment (HTTP $response)"
+            exit 1
+          fi
+
+      - name: Wait for deployment
+        run: |
+          echo "Deployment triggered. Monitor progress in Coolify dashboard."
+          echo "Deployment URL will be available shortly at your configured domain."

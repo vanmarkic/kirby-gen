@@ -5,7 +5,7 @@ import FileUpload from '../components/FileUpload';
 import BrandingForm from '../components/BrandingForm';
 import { useProject } from '../hooks/useProject';
 import { fileEndpoints } from '../api/endpoints';
-import type { BrandingConfig } from '@kirby-gen/shared';
+import type { BrandingConfig, ProjectData } from '@kirby-gen/shared';
 
 export default function InputPage() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -55,16 +55,14 @@ export default function InputPage() {
       }
 
       // Step 2: Update project metadata (Pinterest URL and branding)
-      const updateData = {
-        inputs: {} as Record<string, unknown>,
-      };
+      const inputsUpdate: Record<string, unknown> = {};
 
       if (pinterestUrl) {
-        updateData.inputs.pinterestUrl = pinterestUrl;
+        inputsUpdate.pinterestUrl = pinterestUrl;
       }
 
       if (branding) {
-        updateData.inputs.brandingAssets = {
+        inputsUpdate.brandingAssets = {
           colors: {
             primary: branding.primaryColor,
             secondary: branding.secondaryColor,
@@ -74,8 +72,8 @@ export default function InputPage() {
       }
 
       // Only update if there's metadata to update
-      if (Object.keys(updateData.inputs).length > 0) {
-        await updateProject(projectId, updateData);
+      if (Object.keys(inputsUpdate).length > 0) {
+        await updateProject(projectId, { inputs: inputsUpdate } as unknown as Partial<ProjectData>);
       }
 
       // Navigate to domain mapping
