@@ -122,7 +122,36 @@ export class KirbyDeploymentService implements IKirbyDeploymentService {
   }
 
   async archive(projectId: string): Promise<void> {
-    // Stub - will implement in next task
+    logger.info(`Archiving demo: ${projectId}`);
+
+    const demoPath = path.join(this.demosDir, `demo-${projectId}`);
+
+    if (!await fs.pathExists(demoPath)) {
+      logger.warn(`Demo path not found: ${demoPath}`);
+      return;
+    }
+
+    // Stop PHP server
+    const deployment = this.deployments.get(projectId);
+    if (deployment) {
+      await this.stopPHPServer(deployment.port);
+    }
+
+    // Remove demo directory
+    await fs.remove(demoPath);
+
+    // Update metadata
+    if (deployment) {
+      deployment.isActive = false;
+      this.deployments.set(projectId, deployment);
+    }
+
+    logger.info(`Demo archived: ${projectId}`);
+  }
+
+  private async stopPHPServer(port: number): Promise<void> {
+    // Stub - in real implementation, would kill process
+    logger.info(`Stopped PHP server on port ${port} (stub)`);
   }
 
   async cleanupOldDemos(): Promise<KirbyCleanupResult> {

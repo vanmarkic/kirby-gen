@@ -103,4 +103,38 @@ describe('KirbyDeploymentService', () => {
       expect(files).toContain('release.yml');
     });
   });
+
+  describe('archive', () => {
+    it('should mark deployment as inactive', async () => {
+      const projectId = 'test-archive';
+
+      mockStorage.listFiles.mockResolvedValue([]);
+      jest.spyOn(service as any, 'downloadKirby').mockResolvedValue(undefined);
+      jest.spyOn(service as any, 'startPHPServer').mockResolvedValue(9000);
+      jest.spyOn(service as any, 'stopPHPServer').mockResolvedValue(undefined);
+
+      await service.deploy(projectId);
+      await service.archive(projectId);
+
+      const deployment = await service.getDeployment(projectId);
+      expect(deployment?.isActive).toBe(false);
+    });
+
+    it('should remove demo directory', async () => {
+      const projectId = 'test-remove';
+
+      mockStorage.listFiles.mockResolvedValue([]);
+      jest.spyOn(service as any, 'downloadKirby').mockResolvedValue(undefined);
+      jest.spyOn(service as any, 'startPHPServer').mockResolvedValue(9000);
+      jest.spyOn(service as any, 'stopPHPServer').mockResolvedValue(undefined);
+
+      await service.deploy(projectId);
+
+      const demoPath = path.join(testDemosDir, `demo-${projectId}`);
+      expect(await fs.pathExists(demoPath)).toBe(true);
+
+      await service.archive(projectId);
+      expect(await fs.pathExists(demoPath)).toBe(false);
+    });
+  });
 });
