@@ -6,10 +6,10 @@ services:
       context: .
       dockerfile: Dockerfile.web
       args:
-        - VITE_API_URL=${VITE_API_URL:-http://api:3000}
+        - VITE_API_URL=${SERVICE_URL_API:-${VITE_API_URL:-http://api:3000}}
         - VITE_AUTH_TOKEN=${AUTH_TOKEN}
     environment:
-      - VITE_API_URL=${VITE_API_URL:-http://api:3000}
+      - VITE_API_URL=${SERVICE_URL_API:-${VITE_API_URL:-http://api:3000}}
       - VITE_AUTH_TOKEN=${AUTH_TOKEN}
     ports:
       - "5173:5173"
@@ -23,7 +23,7 @@ services:
     environment:
       - NODE_ENV=production
       - CLAUDE_API_KEY=${CLAUDE_API_KEY}
-      - SKILLS_SERVER_URL=http://skills:8001
+      - SKILLS_SERVER_URL=${SERVICE_URL_SKILLS:-http://skills:8001}
       - PORT=3000
       - AUTH_ENABLED=${AUTH_ENABLED:-true}
       - AUTH_TOKEN=${AUTH_TOKEN}
