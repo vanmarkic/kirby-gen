@@ -3,7 +3,6 @@
  */
 import { Request, Response } from 'express';
 import { promises as fs } from 'fs';
-import path from 'path';
 import archiver from 'archiver';
 import { IStorageService, IDeploymentService, SERVICE_KEYS } from '@kirby-gen/shared';
 import { getService } from '../config/di-setup';

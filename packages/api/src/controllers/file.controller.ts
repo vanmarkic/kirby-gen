@@ -16,7 +16,7 @@ import {
 } from '@kirby-gen/shared';
 import { getService } from '../config/di-setup';
 import { ResponseBuilder } from '../utils/response';
-import { NotFoundError, FileUploadError, ValidationError } from '../utils/errors';
+import { NotFoundError, FileUploadError } from '../utils/errors';
 import { logger } from '../config/logger';
 import { env } from '../config/env';
 
@@ -44,8 +44,12 @@ const storage = multer.diskStorage({
 /**
  * File filter
  */
-const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  if (ALLOWED_MIME_TYPES.includes(file.mimetype as any)) {
+const fileFilter = (
+  _req: Request,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback
+) => {
+  if ((ALLOWED_MIME_TYPES as readonly string[]).includes(file.mimetype)) {
     cb(null, true);
   } else {
     cb(new FileUploadError(`File type not allowed: ${file.mimetype}. Allowed types: ${ALLOWED_FILE_TYPES_DISPLAY}`));

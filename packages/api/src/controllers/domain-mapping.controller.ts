@@ -136,7 +136,7 @@ export async function validateDomainModel(req: Request, res: Response): Promise<
 
   // Validate entities
   if (domainModel.entities) {
-    domainModel.entities.forEach((entity: any, index: number) => {
+    domainModel.entities.forEach((entity: { id?: string; name?: string; fields?: unknown }, index: number) => {
       if (!entity.id) {
         issues.push(`Entity at index ${index} missing ID`);
       }
@@ -151,14 +151,14 @@ export async function validateDomainModel(req: Request, res: Response): Promise<
 
   // Validate relationships
   if (domainModel.relationships) {
-    domainModel.relationships.forEach((rel: any, index: number) => {
+    domainModel.relationships.forEach((rel: { id?: string; from?: string; to?: string; type?: string }, index: number) => {
       if (!rel.id) {
         issues.push(`Relationship at index ${index} missing ID`);
       }
       if (!rel.from || !rel.to) {
         issues.push(`Relationship at index ${index} missing from/to references`);
       }
-      if (!['one-to-one', 'one-to-many', 'many-to-many'].includes(rel.type)) {
+      if (!['one-to-one', 'one-to-many', 'many-to-many'].includes(rel.type || '')) {
         issues.push(`Relationship at index ${index} has invalid type: ${rel.type}`);
       }
     });

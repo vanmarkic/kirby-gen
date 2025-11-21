@@ -6,7 +6,6 @@ import { EventEmitter } from 'events';
 import path from 'path';
 import {
   ProjectData,
-  ProjectStatus,
   IStorageService,
   ISessionService,
   IDeploymentService,
@@ -22,8 +21,6 @@ import {
   WorkflowProgress,
   WorkflowError,
   WorkflowContext,
-  PhaseResult,
-  WORKFLOW_PHASES,
 } from './workflow-types';
 import { env } from '../config/env';
 
@@ -352,7 +349,7 @@ export class WorkflowOrchestrator extends EventEmitter {
   private async executeInstantDeployment(
     project: ProjectData,
     state: WorkflowState,
-    context: WorkflowContext
+    _context: WorkflowContext
   ): Promise<void> {
     const phase = 'instant-demo';
     state.currentPhase = phase;
@@ -396,7 +393,7 @@ export class WorkflowOrchestrator extends EventEmitter {
   private async executePhase5_Deployment(
     project: ProjectData,
     state: WorkflowState,
-    context: WorkflowContext
+    _context: WorkflowContext
   ): Promise<void> {
     const phase = 'deployment';
     state.currentPhase = phase;

@@ -4,7 +4,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/errors';
 import { ResponseBuilder } from '../utils/response';
-import { logger, logError } from '../config/logger';
+import { logError } from '../config/logger';
 import { ZodError } from 'zod';
 
 /**
@@ -15,7 +15,7 @@ export function errorHandler(
   err: Error,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ): void {
   // Log the error
   logError(err, {
@@ -42,7 +42,7 @@ export function errorHandler(
 
   // Handle Multer file upload errors
   if (err.name === 'MulterError') {
-    const multerErr = err as any;
+    const multerErr = err as Error & { code?: string };
     let message = 'File upload error';
 
     switch (multerErr.code) {
@@ -84,7 +84,7 @@ export function errorHandler(
 export function notFoundHandler(
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ): void {
   res.status(404).json(
     ResponseBuilder.error(
@@ -100,7 +100,7 @@ export function notFoundHandler(
  * Wraps async route handlers to catch promise rejections
  */
 export function asyncHandler(
-  fn: (req: Request, res: Response, next: NextFunction) => Promise<any>
+  fn: (req: Request, res: Response, next: NextFunction) => Promise<void>
 ) {
   return (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch(next);

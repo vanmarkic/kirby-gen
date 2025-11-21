@@ -7,7 +7,6 @@ import { Server } from './server';
 import { setupDependencyInjection, cleanupServices } from './config/di-setup';
 import { validateDIContainer } from './config/di-validation';
 import { logger } from './config/logger';
-import { env } from './config/env';
 
 /**
  * Initialize and start the server

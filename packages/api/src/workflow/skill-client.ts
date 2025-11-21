@@ -5,7 +5,6 @@ import { env } from '../config/env';
 import { logger } from '../config/logger';
 import { SkillError } from '../utils/errors';
 import {
-  SkillRequest,
   SkillResponse,
   DomainMappingRequest,
   DomainMappingResponse,

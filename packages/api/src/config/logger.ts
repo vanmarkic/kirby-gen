@@ -78,7 +78,11 @@ export const createLogger = (context: string) => {
 /**
  * Express request logger
  */
-export const logRequest = (req: any, res: any, duration: number) => {
+export const logRequest = (
+  req: { method: string; originalUrl: string; ip?: string; headers: Record<string, string | string[] | undefined> },
+  res: { statusCode: number },
+  duration: number
+) => {
   const { method, originalUrl, ip, headers } = req;
   const { statusCode } = res;
 
@@ -113,7 +117,7 @@ export const logWorkflowProgress = (
   projectId: string,
   phase: string,
   message: string,
-  data?: any
+  data?: unknown
 ) => {
   logger.info('Workflow Progress', {
     projectId,
