@@ -66,3 +66,25 @@ export const generationLimiter = rateLimit({
     );
   },
 });
+
+/**
+ * Aggressive rate limiter for login endpoint to prevent brute force attacks
+ */
+export const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 attempts per window
+  skipSuccessfulRequests: false, // Count all attempts
+  handler: (req, res) => {
+    res.status(429).json(
+      ResponseBuilder.error(
+        'LOGIN_RATE_LIMIT_EXCEEDED',
+        'Too many login attempts, please try again later',
+        429,
+        {
+          limit: 5,
+          window: '15 minutes',
+        }
+      )
+    );
+  },
+});

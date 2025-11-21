@@ -178,6 +178,19 @@ const service = container.resolve<IMyService>('myService');
 ### Environment Configuration
 All environment variables are loaded from `.env` via `packages/api/src/config/env.ts`.
 
+**Authentication** (Simple Token - Development Only):
+- `AUTH_ENABLED` - Enable/disable authentication barrier (default: false)
+- `AUTH_TOKEN` - Shared password for simple authentication
+- Must match in both:
+  - Backend: `packages/api/.env` → `AUTH_TOKEN`
+  - Frontend: `packages/web/.env` → `VITE_AUTH_TOKEN`
+- When enabled:
+  - Users must enter password on frontend login page
+  - All API requests validated against token
+  - Token stored in localStorage
+- For production: Replace with JWT-based authentication
+- See `docs/authentication.md` for setup guide
+
 **Local Development with Claude CLI** (Recommended):
 - Set `NODE_ENV=local` and leave `CLAUDE_API_KEY` empty
 - Install Claude CLI: `npm install -g @anthropic-ai/claude-code`
@@ -189,7 +202,7 @@ All environment variables are loaded from `.env` via `packages/api/src/config/en
 
 Optional (have defaults for local dev):
 - `STORAGE_DIR`, `SESSION_DIR`, `DEPLOYMENT_DIR` - File system paths
-- `PORT` - API server port (default: 3000)
+- `PORT` - API server port (default: 3001)
 
 ### File Path Handling
 - Always use absolute paths from `env.ts` configuration

@@ -11,7 +11,7 @@ import {
 } from '../controllers/generation.controller';
 import { asyncHandler } from '../middleware/error-handler';
 import { validateParams } from '../middleware/validator';
-import { optionalAuth, authenticate } from '../middleware/auth';
+import { authenticate } from '../middleware/auth';
 import { generationLimiter } from '../middleware/rate-limiter';
 
 const router = Router();
@@ -30,7 +30,7 @@ const projectIdSchema = z.object({
 // POST /api/projects/:projectId/generate - Start generation
 router.post(
   '/:projectId/generate',
-  optionalAuth,
+  authenticate,
   generationLimiter,
   validateParams(projectIdSchema),
   asyncHandler(async (req, res) => {
@@ -43,7 +43,7 @@ router.post(
 // GET /api/projects/:projectId/generate - Get generation status
 router.get(
   '/:projectId/generate',
-  optionalAuth,
+  authenticate,
   validateParams(projectIdSchema),
   asyncHandler(getGenerationStatus)
 );
@@ -59,7 +59,7 @@ router.delete(
 // POST /api/projects/:projectId/generate/retry - Retry failed generation
 router.post(
   '/:projectId/generate/retry',
-  optionalAuth,
+  authenticate,
   generationLimiter,
   validateParams(projectIdSchema),
   asyncHandler(async (req, res) => {

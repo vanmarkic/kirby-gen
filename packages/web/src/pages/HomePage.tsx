@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Upload, Wand2, Eye } from 'lucide-react';
+import { Sparkles, Upload, Wand2, Eye, LogOut } from 'lucide-react';
 import { useProject } from '../hooks/useProject';
+import { useAuth } from '../contexts';
 
 export default function HomePage() {
   const navigate = useNavigate();
   const { createProject } = useProject();
+  const { logout } = useAuth();
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreateProject = async () => {
@@ -23,13 +25,28 @@ export default function HomePage() {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <div className="page home-page">
       <div className="home-container">
         <header className="home-header">
-          <div className="logo">
-            <Sparkles className="logo-icon" />
-            <h1>Kirby Gen</h1>
+          <div className="header-top">
+            <div className="logo">
+              <Sparkles className="logo-icon" />
+              <h1>Kirby Gen</h1>
+            </div>
+            <button
+              className="logout-button"
+              onClick={handleLogout}
+              title="Logout"
+            >
+              <LogOut size={20} />
+              <span>Logout</span>
+            </button>
           </div>
           <p className="tagline">
             Generate beautiful, CMS-powered portfolio websites from your work

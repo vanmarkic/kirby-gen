@@ -1,0 +1,19 @@
+{
+  "id": "846fc06a-428d-4677-adbe-18731cdf7da5",
+  "name": "Untitled Project 2025-11-21",
+  "createdAt": "2025-11-21T02:26:04.705Z",
+  "updatedAt": "2025-11-21T02:26:04.707Z",
+  "inputs": {
+    "pinterestUrl": "https://pinterest.com/test-put",
+    "brandingAssets": {
+      "colors": {
+        "primary": "#000000",
+        "secondary": "#ffffff"
+      }
+    }
+  },
+  "status": "input",
+  "currentStep": 0,
+  "totalSteps": 5,
+  "errors": []
+}

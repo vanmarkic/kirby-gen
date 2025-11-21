@@ -12,7 +12,7 @@ import {
 } from '../controllers/file.controller';
 import { asyncHandler } from '../middleware/error-handler';
 import { validateParams } from '../middleware/validator';
-import { optionalAuth, authenticate } from '../middleware/auth';
+import { authenticate } from '../middleware/auth';
 import { uploadLimiter } from '../middleware/rate-limiter';
 
 const router = Router();
@@ -36,7 +36,7 @@ const fileIdSchema = z.object({
 // POST /api/projects/:projectId/files/content - Upload content files
 router.post(
   '/:projectId/files/content',
-  optionalAuth,
+  authenticate,
   uploadLimiter,
   validateParams(projectIdSchema),
   upload.array('files', 20),
@@ -46,7 +46,7 @@ router.post(
 // POST /api/projects/:projectId/files/branding - Upload branding assets
 router.post(
   '/:projectId/files/branding',
-  optionalAuth,
+  authenticate,
   uploadLimiter,
   validateParams(projectIdSchema),
   upload.fields([
@@ -59,7 +59,7 @@ router.post(
 // GET /api/projects/:projectId/files - List all files
 router.get(
   '/:projectId/files',
-  optionalAuth,
+  authenticate,
   validateParams(projectIdSchema),
   asyncHandler(listFiles)
 );

@@ -11,7 +11,7 @@ import {
 } from '../controllers/domain-mapping.controller';
 import { asyncHandler } from '../middleware/error-handler';
 import { validateParams, validateBody, CLAUDE_INPUT_LIMITS } from '../middleware/validator';
-import { optionalAuth } from '../middleware/auth';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
 
@@ -61,7 +61,7 @@ const validateDomainModelSchema = z.object({
 // POST /api/projects/:projectId/domain-model/generate - Generate domain model
 router.post(
   '/:projectId/domain-model/generate',
-  optionalAuth,
+  authenticate,
   validateParams(generateDomainModelSchema.shape.params),
   validateBody(generateDomainModelSchema.shape.body),
   asyncHandler(generateDomainModel)
@@ -70,7 +70,7 @@ router.post(
 // GET /api/projects/:projectId/domain-model - Get domain model
 router.get(
   '/:projectId/domain-model',
-  optionalAuth,
+  authenticate,
   validateParams(projectIdSchema),
   asyncHandler(getDomainModel)
 );
@@ -78,7 +78,7 @@ router.get(
 // PUT /api/projects/:projectId/domain-model - Update domain model
 router.put(
   '/:projectId/domain-model',
-  optionalAuth,
+  authenticate,
   validateParams(updateDomainModelSchema.shape.params),
   validateBody(updateDomainModelSchema.shape.body),
   asyncHandler(updateDomainModel)
@@ -87,7 +87,7 @@ router.put(
 // POST /api/domain-model/validate - Validate domain model structure
 router.post(
   '/validate',
-  optionalAuth,
+  authenticate,
   validateBody(validateDomainModelSchema),
   asyncHandler(validateDomainModel)
 );
