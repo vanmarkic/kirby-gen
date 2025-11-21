@@ -185,11 +185,12 @@ export class LocalStorageService implements IStorageService {
       await uploadPromise;
 
       return filePath;
-    } catch (error: any) {
-      if (error.message?.includes('Invalid')) {
+    } catch (error: unknown) {
+      const err = error as Error;
+      if (err.message?.includes('Invalid')) {
         throw error;
       }
-      throw new Error(`Failed to upload file: ${error.message}`);
+      throw new Error(`Failed to upload file: ${err.message}`);
     }
   }
 
@@ -205,14 +206,16 @@ export class LocalStorageService implements IStorageService {
     try {
       const buffer = await fs.readFile(filePath);
       return buffer;
-    } catch (error: any) {
-      if (error.message?.includes('Invalid')) {
+    } catch (error: unknown) {
+      const err = error as Error;
+      const nodeErr = error as NodeJS.ErrnoException;
+      if (err.message?.includes('Invalid')) {
         throw error;
       }
-      if (error.code === 'ENOENT') {
+      if (nodeErr.code === 'ENOENT') {
         throw new Error('File not found');
       }
-      throw new Error(`Failed to download file: ${error.message}`);
+      throw new Error(`Failed to download file: ${err.message}`);
     }
   }
 
@@ -233,15 +236,17 @@ export class LocalStorageService implements IStorageService {
         .map(entry => entry.name);
 
       return files;
-    } catch (error: any) {
-      if (error.message?.includes('Invalid')) {
+    } catch (error: unknown) {
+      const err = error as Error;
+      const nodeErr = error as NodeJS.ErrnoException;
+      if (err.message?.includes('Invalid')) {
         throw error;
       }
-      if (error.code === 'ENOENT') {
+      if (nodeErr.code === 'ENOENT') {
         // Project directory doesn't exist, return empty array
         return [];
       }
-      throw new Error(`Failed to list files: ${error.message}`);
+      throw new Error(`Failed to list files: ${err.message}`);
     }
   }
 
@@ -262,20 +267,23 @@ export class LocalStorageService implements IStorageService {
       // Try to delete metadata file (ignore if it doesn't exist)
       try {
         await fs.unlink(metadataPath);
-      } catch (metaError: any) {
-        if (metaError.code !== 'ENOENT') {
+      } catch (metaError: unknown) {
+        const nodeErr = metaError as NodeJS.ErrnoException;
+        if (nodeErr.code !== 'ENOENT') {
           throw metaError;
         }
         // Ignore if metadata file doesn't exist
       }
-    } catch (error: any) {
-      if (error.message?.includes('Invalid')) {
+    } catch (error: unknown) {
+      const err = error as Error;
+      const nodeErr = error as NodeJS.ErrnoException;
+      if (err.message?.includes('Invalid')) {
         throw error;
       }
-      if (error.code === 'ENOENT') {
+      if (nodeErr.code === 'ENOENT') {
         throw new Error('File not found');
       }
-      throw new Error(`Failed to delete file: ${error.message}`);
+      throw new Error(`Failed to delete file: ${err.message}`);
     }
   }
 
@@ -289,15 +297,17 @@ export class LocalStorageService implements IStorageService {
 
     try {
       await fs.rm(projectPath, { recursive: true, force: true });
-    } catch (error: any) {
-      if (error.message?.includes('Invalid')) {
+    } catch (error: unknown) {
+      const err = error as Error;
+      const nodeErr = error as NodeJS.ErrnoException;
+      if (err.message?.includes('Invalid')) {
         throw error;
       }
-      if (error.code === 'ENOENT') {
+      if (nodeErr.code === 'ENOENT') {
         // Project doesn't exist, that's okay
         return;
       }
-      throw new Error(`Failed to delete project: ${error.message}`);
+      throw new Error(`Failed to delete project: ${err.message}`);
     }
   }
 
@@ -313,14 +323,16 @@ export class LocalStorageService implements IStorageService {
     try {
       await fs.access(filePath, constants.F_OK);
       return true;
-    } catch (error: any) {
-      if (error.message?.includes('Invalid')) {
+    } catch (error: unknown) {
+      const err = error as Error;
+      const nodeErr = error as NodeJS.ErrnoException;
+      if (err.message?.includes('Invalid')) {
         throw error;
       }
-      if (error.code === 'ENOENT') {
+      if (nodeErr.code === 'ENOENT') {
         return false;
       }
-      throw new Error(`Failed to check file existence: ${error.message}`);
+      throw new Error(`Failed to check file existence: ${err.message}`);
     }
   }
 
@@ -347,14 +359,16 @@ export class LocalStorageService implements IStorageService {
       } catch (parseError) {
         throw new Error('Invalid metadata format');
       }
-    } catch (error: any) {
-      if (error.message?.includes('Invalid')) {
+    } catch (error: unknown) {
+      const err = error as Error;
+      const nodeErr = error as NodeJS.ErrnoException;
+      if (err.message?.includes('Invalid')) {
         throw error;
       }
-      if (error.code === 'ENOENT') {
+      if (nodeErr.code === 'ENOENT') {
         throw new Error('Metadata not found');
       }
-      throw new Error(`Failed to get file metadata: ${error.message}`);
+      throw new Error(`Failed to get file metadata: ${err.message}`);
     }
   }
 
@@ -383,11 +397,12 @@ export class LocalStorageService implements IStorageService {
       await fs.writeFile(metadataPath, JSON.stringify(projectData, null, 2), 'utf-8');
 
       return projectData;
-    } catch (error: any) {
-      if (error.message?.includes('Invalid')) {
+    } catch (error: unknown) {
+      const err = error as Error;
+      if (err.message?.includes('Invalid')) {
         throw error;
       }
-      throw new Error(`Failed to create project: ${error.message}`);
+      throw new Error(`Failed to create project: ${err.message}`);
     }
   }
 
@@ -408,14 +423,16 @@ export class LocalStorageService implements IStorageService {
       projectData.updatedAt = new Date(projectData.updatedAt);
 
       return projectData as ProjectData;
-    } catch (error: any) {
-      if (error.message?.includes('Invalid')) {
+    } catch (error: unknown) {
+      const err = error as Error;
+      const nodeErr = error as NodeJS.ErrnoException;
+      if (err.message?.includes('Invalid')) {
         throw error;
       }
-      if (error.code === 'ENOENT') {
+      if (nodeErr.code === 'ENOENT') {
         return null;
       }
-      throw new Error(`Failed to get project: ${error.message}`);
+      throw new Error(`Failed to get project: ${err.message}`);
     }
   }
 
@@ -445,11 +462,12 @@ export class LocalStorageService implements IStorageService {
     try {
       await fs.writeFile(metadataPath, JSON.stringify(updatedProject, null, 2), 'utf-8');
       return updatedProject;
-    } catch (error: any) {
-      if (error.message?.includes('Invalid')) {
+    } catch (error: unknown) {
+      const err = error as Error;
+      if (err.message?.includes('Invalid')) {
         throw error;
       }
-      throw new Error(`Failed to update project: ${error.message}`);
+      throw new Error(`Failed to update project: ${err.message}`);
     }
   }
 
@@ -480,12 +498,14 @@ export class LocalStorageService implements IStorageService {
       return projects.sort((a, b) =>
         b.createdAt.getTime() - a.createdAt.getTime()
       );
-    } catch (error: any) {
-      if (error.code === 'ENOENT') {
+    } catch (error: unknown) {
+      const err = error as Error;
+      const nodeErr = error as NodeJS.ErrnoException;
+      if (nodeErr.code === 'ENOENT') {
         // Base directory doesn't exist, return empty array
         return [];
       }
-      throw new Error(`Failed to list projects: ${error.message}`);
+      throw new Error(`Failed to list projects: ${err.message}`);
     }
   }
 
@@ -534,8 +554,9 @@ export class LocalStorageService implements IStorageService {
           ...t,
           timestamp: new Date(t.timestamp),
         }));
-      } catch (error: any) {
-        if (error.code === 'ENOENT') {
+      } catch (error: unknown) {
+        const nodeErr = error as NodeJS.ErrnoException;
+        if (nodeErr.code === 'ENOENT') {
           // Create new session
           session = {
             projectId,
@@ -557,11 +578,12 @@ export class LocalStorageService implements IStorageService {
       const tmpPath = `${conversationPath}.tmp`;
       await fs.writeFile(tmpPath, JSON.stringify(session, null, 2), 'utf-8');
       await fs.rename(tmpPath, conversationPath);
-    } catch (error: any) {
-      if (error.message?.includes('Invalid') || error.message?.includes('not found')) {
+    } catch (error: unknown) {
+      const err = error as Error;
+      if (err.message?.includes('Invalid') || err.message?.includes('not found')) {
         throw error;
       }
-      throw new Error(`Failed to save conversation turn: ${error.message}`);
+      throw new Error(`Failed to save conversation turn: ${err.message}`);
     }
   }
 
@@ -585,20 +607,22 @@ export class LocalStorageService implements IStorageService {
       if (session.completedAt) {
         session.completedAt = new Date(session.completedAt);
       }
-      session.turns = session.turns.map(t => ({
+      session.turns = session.turns.map((t: ConversationTurn & { timestamp: string | Date }) => ({
         ...t,
         timestamp: new Date(t.timestamp),
       }));
 
       return session;
-    } catch (error: any) {
-      if (error.message?.includes('Invalid')) {
+    } catch (error: unknown) {
+      const err = error as Error;
+      const nodeErr = error as NodeJS.ErrnoException;
+      if (err.message?.includes('Invalid')) {
         throw error;
       }
-      if (error.code === 'ENOENT') {
+      if (nodeErr.code === 'ENOENT') {
         return null;
       }
-      throw new Error(`Failed to get conversation: ${error.message}`);
+      throw new Error(`Failed to get conversation: ${err.message}`);
     }
   }
 

@@ -32,7 +32,7 @@ export async function generateDomainModel(req: Request, res: Response): Promise<
   }
 
   // Prepare content files
-  const contentFiles = project.inputs.contentFiles.map((file) => ({
+  const contentFiles = project.inputs.contentFiles.map((file: { filename: string; originalName: string; mimeType: string }) => ({
     path: path.join(env.UPLOAD_DIR, projectId, file.filename),
     filename: file.originalName,
     mimeType: file.mimeType,

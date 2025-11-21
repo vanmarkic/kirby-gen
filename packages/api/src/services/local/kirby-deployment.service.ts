@@ -122,7 +122,7 @@ export class KirbyDeploymentService implements IKirbyDeploymentService {
 
     // Get all files and filter for blueprints
     const allFiles = await this.storage.listFiles(projectId);
-    const blueprintFiles = allFiles.filter(file => file.startsWith('blueprints/'));
+    const blueprintFiles = allFiles.filter((file: string) => file.startsWith('blueprints/'));
 
     for (const file of blueprintFiles) {
       const content = await this.storage.downloadFile(projectId, file);

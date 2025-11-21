@@ -184,7 +184,7 @@ export async function deleteFile(req: Request, res: Response): Promise<void> {
   }
 
   // Find and remove file
-  const fileIndex = project.inputs.contentFiles.findIndex((f) => f.id === fileId);
+  const fileIndex = project.inputs.contentFiles.findIndex((f: { id: string }) => f.id === fileId);
 
   if (fileIndex === -1) {
     throw new NotFoundError('File', fileId);

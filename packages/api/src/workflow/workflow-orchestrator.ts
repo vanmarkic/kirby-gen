@@ -146,7 +146,7 @@ export class WorkflowOrchestrator extends EventEmitter {
 
     try {
       // Prepare content files
-      const contentFiles = project.inputs.contentFiles.map((file) => ({
+      const contentFiles = project.inputs.contentFiles.map((file: { filename: string; originalName: string; mimeType: string }) => ({
         path: path.join(context.uploadDir, file.filename),
         filename: file.originalName,
         mimeType: file.mimeType,
@@ -191,7 +191,7 @@ export class WorkflowOrchestrator extends EventEmitter {
       }
 
       // Prepare content files
-      const contentFiles = project.inputs.contentFiles.map((file) => ({
+      const contentFiles = project.inputs.contentFiles.map((file: { filename: string; originalName: string; mimeType: string }) => ({
         path: path.join(context.uploadDir, file.filename),
         filename: file.originalName,
         mimeType: file.mimeType,
