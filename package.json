@@ -33,6 +33,7 @@
     "playwright:install": "playwright install chromium",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
+    "validate": "npm run typecheck && npm run lint",
     "clean": "rm -rf node_modules packages/*/node_modules packages/*/dist",
     "setup": "npm install && npm run setup:skills",
     "setup:skills": "cd packages/skills && python -m venv venv && . venv/bin/activate && pip install -r requirements.txt"

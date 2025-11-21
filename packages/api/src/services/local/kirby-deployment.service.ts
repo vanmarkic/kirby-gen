@@ -104,12 +104,12 @@ export class KirbyDeploymentService implements IKirbyDeploymentService {
     }
   }
 
-  private async downloadKirby(demoPath: string): Promise<void> {
+  private async downloadKirby(_demoPath: string): Promise<void> {
     // Stub - will implement in next task
     logger.info('Downloading Kirby (stub)');
   }
 
-  private async startPHPServer(projectId: string, demoPath: string): Promise<number> {
+  private async startPHPServer(_projectId: string, _demoPath: string): Promise<number> {
     // Stub - will implement in next task
     return this.basePort;
   }
@@ -205,7 +205,7 @@ export class KirbyDeploymentService implements IKirbyDeploymentService {
     logger.info(`Stopped PHP server on port ${port} (stub)`);
   }
 
-  private async enforceQuota(newProjectId: string): Promise<void> {
+  private async enforceQuota(_newProjectId: string): Promise<void> {
     const activeDemos = Array.from(this.deployments.values())
       .filter(d => d.isActive)
       .sort((a, b) => a.deployedAt.getTime() - b.deployedAt.getTime());
