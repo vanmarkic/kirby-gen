@@ -128,9 +128,12 @@ export default function ConversationUI({
               {message.role === 'assistant' ? <Bot size={20} /> : <User size={20} />}
             </div>
             <div className="message-content">
-              <p>{message.content}</p>
+              <div className="message-text">{message.content}</div>
               <span className="message-time">
-                {new Date(message.timestamp).toLocaleTimeString()}
+                {new Date(message.timestamp).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
               </span>
             </div>
           </div>
