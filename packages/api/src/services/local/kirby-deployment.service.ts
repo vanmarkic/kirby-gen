@@ -41,6 +41,9 @@ export class KirbyDeploymentService implements IKirbyDeploymentService {
   async deploy(projectId: string): Promise<KirbyDeploymentResult> {
     logger.info(`Deploying Kirby demo for project: ${projectId}`);
 
+    // Check quota and cleanup if needed
+    await this.enforceQuota(projectId);
+
     // Create demo directory
     const demoPath = path.join(this.demosDir, `demo-${projectId}`);
     await fs.ensureDir(demoPath);
@@ -152,6 +155,29 @@ export class KirbyDeploymentService implements IKirbyDeploymentService {
   private async stopPHPServer(port: number): Promise<void> {
     // Stub - in real implementation, would kill process
     logger.info(`Stopped PHP server on port ${port} (stub)`);
+  }
+
+  private async enforceQuota(newProjectId: string): Promise<void> {
+    const activeDemos = Array.from(this.deployments.values())
+      .filter(d => d.isActive)
+      .sort((a, b) => a.deployedAt.getTime() - b.deployedAt.getTime());
+
+    if (activeDemos.length >= this.maxDemos) {
+      const oldest = activeDemos[0];
+      logger.warn(`Quota reached (${this.maxDemos}), archiving oldest demo: ${oldest.projectId}`);
+
+      // Send email notification
+      await this.email.send({
+        to: 'admin@yourdomain.com', // TODO: Get from project metadata
+        subject: 'Demo Site Will Be Archived',
+        body: `Your demo site for project ${oldest.projectId} will be archived due to quota limits.
+The site data is safely backed up in storage.
+URL: ${oldest.url}
+Deployed: ${oldest.deployedAt.toISOString()}`
+      });
+
+      await this.archive(oldest.projectId);
+    }
   }
 
   async cleanupOldDemos(): Promise<KirbyCleanupResult> {

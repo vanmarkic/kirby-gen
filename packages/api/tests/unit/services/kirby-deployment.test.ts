@@ -102,6 +102,36 @@ describe('KirbyDeploymentService', () => {
       expect(files).toContain('artist.yml');
       expect(files).toContain('release.yml');
     });
+
+    it('should enforce quota when max demos reached', async () => {
+      // Deploy maxDemos (3) projects
+      for (let i = 0; i < 3; i++) {
+        mockStorage.listFiles.mockResolvedValue([]);
+        jest.spyOn(service as any, 'downloadKirby').mockResolvedValue(undefined);
+        jest.spyOn(service as any, 'startPHPServer').mockResolvedValue(9000 + i);
+
+        await service.deploy(`project-${i}`);
+      }
+
+      // Deploy 4th project (should trigger quota)
+      mockStorage.listFiles.mockResolvedValue([]);
+      jest.spyOn(service as any, 'downloadKirby').mockResolvedValue(undefined);
+      jest.spyOn(service as any, 'startPHPServer').mockResolvedValue(9003);
+      jest.spyOn(service as any, 'stopPHPServer').mockResolvedValue(undefined);
+
+      await service.deploy('project-4');
+
+      // Should have sent archive notification email
+      expect(mockEmail.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          subject: 'Demo Site Will Be Archived'
+        })
+      );
+
+      // Oldest demo should be archived
+      const oldestDeployment = await service.getDeployment('project-0');
+      expect(oldestDeployment?.isActive).toBe(false);
+    });
   });
 
   describe('archive', () => {
