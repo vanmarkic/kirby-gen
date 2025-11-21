@@ -9,18 +9,32 @@ import { env } from '../config/env';
  */
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, Postman, etc.)
+    // Allow requests with no origin (same-origin requests, mobile apps, Postman, curl, etc.)
+    // This includes requests proxied through nginx on the same domain
     if (!origin) {
       return callback(null, true);
     }
 
     const allowedOrigins = env.CORS_ORIGIN.split(',').map((o) => o.trim());
 
-    if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+    // Allow wildcard
+    if (allowedOrigins.includes('*')) {
+      return callback(null, true);
     }
+
+    // Allow exact matches
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // In production behind reverse proxy, requests from internal network
+    // (nginx proxy) may have private IP origins like http://10.0.2.2
+    // Allow these if we're in production mode
+    if (env.NODE_ENV === 'production' && origin.match(/^https?:\/\/(10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|192\.168\.|127\.0\.0\.1|localhost)/)) {
+      return callback(null, true);
+    }
+
+    callback(new Error('Not allowed by CORS'));
   },
   credentials: env.CORS_CREDENTIALS,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
