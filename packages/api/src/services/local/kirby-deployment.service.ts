@@ -23,6 +23,7 @@ export class KirbyDeploymentService implements IKirbyDeploymentService {
   private readonly ttlDays: number;
   private readonly maxDemos: number;
   private deployments: Map<string, KirbyDeploymentInfo> = new Map();
+  private quotaMutex: Promise<void> = Promise.resolve();
 
   constructor(
     private storage: IStorageService,
@@ -41,45 +42,66 @@ export class KirbyDeploymentService implements IKirbyDeploymentService {
   async deploy(projectId: string): Promise<KirbyDeploymentResult> {
     logger.info(`Deploying Kirby demo for project: ${projectId}`);
 
-    // Check quota and cleanup if needed
-    await this.enforceQuota(projectId);
+    // Wait for any pending quota enforcement to complete (prevents race conditions)
+    await this.quotaMutex;
 
-    // Create demo directory
+    // Create a new mutex for this deployment
+    let releaseMutex: () => void;
+    this.quotaMutex = new Promise(resolve => {
+      releaseMutex = resolve;
+    });
+
     const demoPath = path.join(this.demosDir, `demo-${projectId}`);
-    await fs.ensureDir(demoPath);
 
-    // Download Kirby (stub for now)
-    await this.downloadKirby(demoPath);
+    try {
+      // Check quota and cleanup if needed (protected by mutex)
+      await this.enforceQuota(projectId);
 
-    // Copy blueprints
-    await this.copyBlueprints(projectId, demoPath);
+      // Create demo directory
+      await fs.ensureDir(demoPath);
 
-    // Start PHP server (stub for now)
-    const port = await this.startPHPServer(projectId, demoPath);
+      // Download Kirby (stub for now)
+      await this.downloadKirby(demoPath);
 
-    // Save deployment metadata
-    const deployedAt = new Date();
-    const deployment: KirbyDeploymentInfo = {
-      projectId,
-      url: `http://localhost:${port}/demo-${projectId}`,
-      port,
-      deployedAt,
-      expiresAt: new Date(deployedAt.getTime() + this.ttlDays * 24 * 60 * 60 * 1000),
-      isActive: true
-    };
+      // Copy blueprints - this can throw if storage fails
+      await this.copyBlueprints(projectId, demoPath);
 
-    await this.saveDeploymentMetadata(demoPath, deployment);
-    this.deployments.set(projectId, deployment);
+      // Start PHP server (stub for now)
+      const port = await this.startPHPServer(projectId, demoPath);
 
-    logger.info(`Demo deployed: ${deployment.url}`);
+      // Save deployment metadata
+      const deployedAt = new Date();
+      const deployment: KirbyDeploymentInfo = {
+        projectId,
+        url: `http://localhost:${port}/demo-${projectId}`,
+        port,
+        deployedAt,
+        expiresAt: new Date(deployedAt.getTime() + this.ttlDays * 24 * 60 * 60 * 1000),
+        isActive: true
+      };
 
-    return {
-      projectId,
-      url: deployment.url,
-      port,
-      deployedAt,
-      panelUrl: `${deployment.url}/panel`
-    };
+      await this.saveDeploymentMetadata(demoPath, deployment);
+      this.deployments.set(projectId, deployment);
+
+      logger.info(`Demo deployed: ${deployment.url}`);
+
+      return {
+        projectId,
+        url: deployment.url,
+        port,
+        deployedAt,
+        panelUrl: `${deployment.url}/panel`
+      };
+    } catch (error) {
+      // Cleanup demo directory on failure
+      if (await fs.pathExists(demoPath)) {
+        await fs.remove(demoPath);
+      }
+      throw error;
+    } finally {
+      // Release mutex
+      releaseMutex!();
+    }
   }
 
   private async downloadKirby(demoPath: string): Promise<void> {
@@ -117,7 +139,33 @@ export class KirbyDeploymentService implements IKirbyDeploymentService {
   }
 
   private loadDeployments(): void {
-    // Stub - will implement later
+    try {
+      if (!fs.existsSync(this.demosDir)) {
+        return;
+      }
+
+      const demoDirs = fs.readdirSync(this.demosDir);
+
+      for (const demoDir of demoDirs) {
+        if (!demoDir.startsWith('demo-')) continue;
+
+        const metadataPath = path.join(this.demosDir, demoDir, '.deployed-at.json');
+        if (!fs.existsSync(metadataPath)) continue;
+
+        const metadata = fs.readJsonSync(metadataPath) as KirbyDeploymentInfo;
+
+        // Convert date strings back to Date objects
+        metadata.deployedAt = new Date(metadata.deployedAt);
+        metadata.expiresAt = new Date(metadata.expiresAt);
+
+        this.deployments.set(metadata.projectId, metadata);
+        logger.info(`Loaded deployment: ${metadata.projectId} (active: ${metadata.isActive})`);
+      }
+
+      logger.info(`Loaded ${this.deployments.size} existing deployments`);
+    } catch (error) {
+      logger.error('Error loading deployments:', error);
+    }
   }
 
   async getDeployment(projectId: string): Promise<KirbyDeploymentInfo | null> {

@@ -206,4 +206,91 @@ describe('KirbyDeploymentService', () => {
       expect(result.archived).not.toContain('new-project');
     });
   });
+
+  describe('error handling', () => {
+    it('should handle storage failure gracefully when listing files fails', async () => {
+      const projectId = 'test-storage-fail';
+
+      // Mock storage to throw error
+      mockStorage.listFiles.mockRejectedValue(new Error('Storage unavailable'));
+      jest.spyOn(service as any, 'downloadKirby').mockResolvedValue(undefined);
+      jest.spyOn(service as any, 'startPHPServer').mockResolvedValue(9000);
+
+      // Should throw the error (not swallow it)
+      await expect(service.deploy(projectId)).rejects.toThrow('Storage unavailable');
+
+      // Should not have created demo directory
+      const demoPath = path.join(testDemosDir, `demo-${projectId}`);
+      const exists = await fs.pathExists(demoPath);
+      expect(exists).toBe(false);
+    });
+
+    it('should handle concurrent deployments at quota limit', async () => {
+      // Deploy maxDemos (3) projects first
+      // Add small delays to ensure distinct timestamps
+      for (let i = 0; i < 3; i++) {
+        if (i > 0) await new Promise(resolve => setTimeout(resolve, 10));
+        mockStorage.listFiles.mockResolvedValue([]);
+        jest.spyOn(service as any, 'downloadKirby').mockResolvedValue(undefined);
+        jest.spyOn(service as any, 'startPHPServer').mockResolvedValue(9000 + i);
+        await service.deploy(`project-${i}`);
+      }
+
+      // Small delay to ensure concurrent deployments have later timestamps
+      await new Promise(resolve => setTimeout(resolve, 20));
+
+      // Try to deploy 2 projects concurrently
+      // The mutex will make them execute sequentially, but both should succeed
+      mockStorage.listFiles.mockResolvedValue([]);
+      jest.spyOn(service as any, 'downloadKirby').mockResolvedValue(undefined);
+      jest.spyOn(service as any, 'startPHPServer').mockResolvedValue(9003);
+      jest.spyOn(service as any, 'stopPHPServer').mockResolvedValue(undefined);
+
+      const deploy1 = service.deploy('concurrent-1');
+
+      // Small delay to ensure concurrent-2 gets a later timestamp when it actually deploys
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      jest.spyOn(service as any, 'startPHPServer').mockResolvedValue(9004);
+      const deploy2 = service.deploy('concurrent-2');
+
+      await Promise.all([deploy1, deploy2]);
+
+      // Both new deployments should be active
+      expect((await service.getDeployment('concurrent-1'))?.isActive).toBe(true);
+      expect((await service.getDeployment('concurrent-2'))?.isActive).toBe(true);
+
+      // Should have archived 2 oldest demos (one per deployment)
+      expect((await service.getDeployment('project-0'))?.isActive).toBe(false);
+      expect((await service.getDeployment('project-1'))?.isActive).toBe(false);
+    });
+
+    it('should load existing deployments on service restart', async () => {
+      // Deploy a demo
+      const projectId = 'test-restart';
+      mockStorage.listFiles.mockResolvedValue([]);
+      jest.spyOn(service as any, 'downloadKirby').mockResolvedValue(undefined);
+      jest.spyOn(service as any, 'startPHPServer').mockResolvedValue(9000);
+
+      await service.deploy(projectId);
+
+      // Create new service instance (simulates restart)
+      const newService = new KirbyDeploymentService(
+        mockStorage,
+        mockEmail,
+        {
+          demosDir: testDemosDir,
+          basePort: 9000,
+          ttlDays: 7,
+          maxDemos: 3
+        }
+      );
+
+      // Should have loaded the existing deployment
+      const deployment = await newService.getDeployment(projectId);
+      expect(deployment).toBeDefined();
+      expect(deployment?.projectId).toBe(projectId);
+      expect(deployment?.isActive).toBe(true);
+    });
+  });
 });
