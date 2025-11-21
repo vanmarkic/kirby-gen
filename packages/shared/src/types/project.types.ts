@@ -29,6 +29,15 @@ export interface ProjectData {
   deployment?: GeneratedSite; // Alias for generated (used by web components)
   generatedArtifacts?: GeneratedArtifacts; // NEW: Generated artifacts metadata
 
+  // Instant demo deployment info
+  demoDeployment?: {
+    url: string;
+    panelUrl: string;
+    deployedAt: Date;
+    port: number;
+    expiresAt?: Date;
+  };
+
   // Metadata
   status: ProjectStatus;
   currentStep: number;
