@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const AUTH_TOKEN_KEY = 'auth_token';
+
 // Create axios instance with default config
 export const apiClient = axios.create({
   baseURL: '/api',
@@ -12,10 +14,10 @@ export const apiClient = axios.create({
 // Request interceptor
 apiClient.interceptors.request.use(
   (config) => {
-    // Add auth token from environment variable
-    const token = import.meta.env.VITE_AUTH_TOKEN;
+    // Add auth token from localStorage
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
     if (token) {
-      config.headers['X-Auth-Token'] = token;
+      config.headers['x-auth-token'] = token;
     }
     return config;
   },
@@ -41,7 +43,8 @@ apiClient.interceptors.response.use(
           break;
         case 401:
           console.error('Unauthorized');
-          // Redirect to login if needed
+          // Clear auth token on 401 errors
+          localStorage.removeItem(AUTH_TOKEN_KEY);
           break;
         case 403:
           console.error('Forbidden');
