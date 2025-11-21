@@ -1,0 +1,13 @@
+{
+  "id": "52834a82-0326-4f72-8a34-745c6fb4535d",
+  "name": "Untitled Project 2025-11-21",
+  "createdAt": "2025-11-21T02:32:54.524Z",
+  "updatedAt": "2025-11-21T02:32:54.527Z",
+  "inputs": {
+    "pinterestUrl": "https://pinterest.com/test"
+  },
+  "status": "input",
+  "currentStep": 0,
+  "totalSteps": 5,
+  "errors": []
+}
