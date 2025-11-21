@@ -53,6 +53,12 @@ Object.defineProperty(navigator, 'clipboard', {
 // Mock fetch
 global.fetch = vi.fn();
 
+// Mock scrollIntoView (not available in jsdom)
+Object.defineProperty((global as any).HTMLElement.prototype, 'scrollIntoView', {
+  value: vi.fn(),
+  writable: true,
+});
+
 // Suppress console errors in tests (optional)
 const originalError = console.error;
 beforeAll(() => {

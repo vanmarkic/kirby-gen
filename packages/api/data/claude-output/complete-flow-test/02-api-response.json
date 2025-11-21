@@ -3,12 +3,12 @@
   "data": null,
   "error": {
     "code": "TEST_SKILL_ERROR",
-    "message": "5 validation errors for ContentSchema\nentities.1.fields.6.options\n  Input should be a valid dictionary or instance of FieldOptions [type=model_type, input_value=['Live Show', 'Virtual Concert', 'Festival'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nentities.2.fields.1.options\n  Input should be a valid dictionary or instance of FieldOptions [type=model_type, input_value=['Album', 'EP', 'Single', 'Compilation'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nrelationships.0.type\n  Input should be 'one-to-one', 'one-to-many' or 'many-to-many' [type=enum, input_value='many-to-one', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nrelationships.1.type\n  Input should be 'one-to-one', 'one-to-many' or 'many-to-many' [type=enum, input_value='many-to-one', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nrelationships.2.type\n  Input should be 'one-to-one', 'one-to-many' or 'many-to-many' [type=enum, input_value='many-to-one', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum",
+    "message": "5 validation errors for ContentSchema\nentities.1.fields.6.options\n  Input should be a valid dictionary or instance of FieldOptions [type=model_type, input_value=['Upcoming', 'Past'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nentities.2.fields.1.options\n  Input should be a valid dictionary or instance of FieldOptions [type=model_type, input_value=['Album', 'EP', 'Single'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nrelationships.0.type\n  Input should be 'one-to-one', 'one-to-many' or 'many-to-many' [type=enum, input_value='many-to-one', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nrelationships.1.type\n  Input should be 'one-to-one', 'one-to-many' or 'many-to-many' [type=enum, input_value='many-to-one', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nrelationships.2.type\n  Input should be 'one-to-one', 'one-to-many' or 'many-to-many' [type=enum, input_value='many-to-one', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum",
     "details": {
       "description": "I'm a musician playing gigs. I want to showcase both upcoming and past gigs with:\n- Venue name and location\n- Date and time\n- Ticket links for upcoming shows\n- Photos and videos from performances\n\nI a"
     }
   },
   "metadata": {
-    "duration": 20.99495005607605
+    "duration": 20.065499782562256
   }
 }

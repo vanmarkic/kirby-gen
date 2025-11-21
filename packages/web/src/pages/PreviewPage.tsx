@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Download } from 'lucide-react';
 import DeploymentInfo from '../components/DeploymentInfo';
 import { useProject } from '../hooks/useProject';
+import { projectEndpoints } from '../api/endpoints';
 import type { Project } from '@kirby-gen/shared';
 
 export default function PreviewPage() {
@@ -29,8 +30,7 @@ export default function PreviewPage() {
       setProject(projectData);
 
       // Get preview URL from backend
-      const response = await fetch(`/api/projects/${projectId}/preview-url`);
-      const data = await response.json();
+      const data = await projectEndpoints.getPreviewUrl(projectId);
       setPreviewUrl(data.url);
     } catch (error) {
       console.error('Failed to load project:', error);
@@ -44,8 +44,7 @@ export default function PreviewPage() {
     if (!projectId) return;
 
     try {
-      const response = await fetch(`/api/projects/${projectId}/download`);
-      const blob = await response.blob();
+      const blob = await projectEndpoints.download(projectId);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

@@ -5,6 +5,7 @@ import ProgressBar from '../components/ProgressBar';
 import ProgressLog from '../components/ProgressLog';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { useProgressStore } from '../stores/progressStore';
+import { projectEndpoints } from '../api/endpoints';
 
 export default function ProgressPage() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -48,13 +49,7 @@ export default function ProgressPage() {
 
   const startGeneration = async () => {
     try {
-      const response = await fetch(`/api/projects/${projectId}/generate`, {
-        method: 'POST',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to start generation');
-      }
+      await projectEndpoints.generate(projectId!);
     } catch (error) {
       console.error('Failed to start generation:', error);
       navigate('/error', { state: { error: 'Failed to start generation' } });
