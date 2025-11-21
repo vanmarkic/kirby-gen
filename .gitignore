@@ -47,6 +47,7 @@ coverage/
 _project.json
 # Generated sites
 /packages/kirby-generator/output/
+start-server.sh
 
 # Logs
 logs/
