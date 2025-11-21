@@ -102,6 +102,8 @@ export const SERVICE_KEYS = {
   STORAGE: 'storage',
   SESSION: 'session',
   DEPLOYMENT: 'deployment',
+  EMAIL: 'email',
+  KIRBY_DEPLOYMENT: 'kirbyDeployment',
 } as const;
 
 export type ServiceKey = (typeof SERVICE_KEYS)[keyof typeof SERVICE_KEYS];

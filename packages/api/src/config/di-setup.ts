@@ -8,6 +8,9 @@ import {
   LocalSessionService,
   LocalDeploymentService,
 } from '../services/local';
+import { LocalEmailService } from '../services/local/local-email.service';
+import { KirbyDeploymentService } from '../services/local/kirby-deployment.service';
+import { CleanupScheduler } from '../services/cleanup-scheduler';
 import { env } from './env';
 import { logger } from './logger';
 
@@ -51,6 +54,30 @@ export function setupDependencyInjection(): void {
         }),
       true
     );
+
+    // Register Email Service
+    container.register(
+      SERVICE_KEYS.EMAIL,
+      () => new LocalEmailService(),
+      true
+    );
+
+    // Register Kirby Deployment Service
+    container.register(
+      SERVICE_KEYS.KIRBY_DEPLOYMENT,
+      () =>
+        new KirbyDeploymentService(
+          container.resolve(SERVICE_KEYS.STORAGE),
+          container.resolve(SERVICE_KEYS.EMAIL)
+        ),
+      true
+    );
+
+    // Start cleanup scheduler
+    const scheduler = new CleanupScheduler(
+      container.resolve(SERVICE_KEYS.KIRBY_DEPLOYMENT)
+    );
+    scheduler.start();
 
     logger.info('Dependency injection container configured successfully', {
       services: container.getRegisteredServices(),
