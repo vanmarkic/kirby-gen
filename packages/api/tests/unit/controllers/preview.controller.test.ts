@@ -164,7 +164,7 @@ describe('Preview Controller', () => {
 
       mockStorageService.getProject.mockResolvedValue(mockProject);
       (fs.access as jest.Mock).mockResolvedValue(undefined);
-      (archiver as jest.Mock).mockReturnValue(mockArchive);
+      (archiver as unknown as jest.Mock).mockReturnValue(mockArchive);
 
       const req = {
         params: { projectId: 'test-project' },
@@ -205,7 +205,7 @@ describe('Preview Controller', () => {
 
       mockStorageService.getProject.mockResolvedValue(mockProject);
       (fs.access as jest.Mock).mockResolvedValue(undefined);
-      (archiver as jest.Mock).mockReturnValue(mockArchive);
+      (archiver as unknown as jest.Mock).mockReturnValue(mockArchive);
 
       const req = {
         params: { projectId: 'test-project' },

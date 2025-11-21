@@ -104,6 +104,7 @@ export const SERVICE_KEYS = {
   DEPLOYMENT: 'deployment',
   EMAIL: 'email',
   KIRBY_DEPLOYMENT: 'kirbyDeployment',
+  GIT: 'git',
 } as const;
 
 export type ServiceKey = (typeof SERVICE_KEYS)[keyof typeof SERVICE_KEYS];

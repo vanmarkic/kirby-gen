@@ -68,7 +68,7 @@ describe('Generation Controller', () => {
 
       const mockOn = jest.fn();
 
-      (WorkflowOrchestrator as jest.Mock).mockImplementation(() => ({
+      (WorkflowOrchestrator as unknown as jest.Mock).mockImplementation(() => ({
         execute: mockExecute,
         on: mockOn,
         removeAllListeners: jest.fn(),
@@ -119,7 +119,7 @@ describe('Generation Controller', () => {
       const mockExecute = jest.fn().mockResolvedValue({});
       const mockOn = jest.fn();
 
-      (WorkflowOrchestrator as jest.Mock).mockImplementation(() => ({
+      (WorkflowOrchestrator as unknown as jest.Mock).mockImplementation(() => ({
         execute: mockExecute,
         on: mockOn,
         removeAllListeners: jest.fn(),
@@ -192,7 +192,7 @@ describe('Generation Controller', () => {
         () => new Promise((resolve) => setTimeout(resolve, 1000))
       );
 
-      (WorkflowOrchestrator as jest.Mock).mockImplementation(() => ({
+      (WorkflowOrchestrator as unknown as jest.Mock).mockImplementation(() => ({
         execute: mockExecute,
         on: jest.fn(),
         removeAllListeners: jest.fn(),
@@ -273,7 +273,7 @@ describe('Generation Controller', () => {
         () => new Promise((resolve) => setTimeout(resolve, 1000))
       );
 
-      (WorkflowOrchestrator as jest.Mock).mockImplementation(() => ({
+      (WorkflowOrchestrator as unknown as jest.Mock).mockImplementation(() => ({
         execute: mockExecute,
         on: jest.fn(),
         removeAllListeners: jest.fn(),
@@ -339,7 +339,7 @@ describe('Generation Controller', () => {
 
       const mockRemoveAllListeners = jest.fn();
 
-      (WorkflowOrchestrator as jest.Mock).mockImplementation(() => ({
+      (WorkflowOrchestrator as unknown as jest.Mock).mockImplementation(() => ({
         execute: mockExecute,
         on: jest.fn(),
         removeAllListeners: mockRemoveAllListeners,
@@ -426,7 +426,7 @@ describe('Generation Controller', () => {
 
       const mockExecute = jest.fn().mockResolvedValue({});
 
-      (WorkflowOrchestrator as jest.Mock).mockImplementation(() => ({
+      (WorkflowOrchestrator as unknown as jest.Mock).mockImplementation(() => ({
         execute: mockExecute,
         on: jest.fn(),
         removeAllListeners: jest.fn(),

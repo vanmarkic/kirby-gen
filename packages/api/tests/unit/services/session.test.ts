@@ -19,6 +19,7 @@ describe('LocalSessionService', () => {
   // Helper function to create mock ProjectData
   const createMockProjectData = (id: string = 'test-project'): ProjectData => ({
     id,
+    name: 'Test Project',
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
     inputs: {

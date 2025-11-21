@@ -41,7 +41,9 @@ describe('Project Controller', () => {
 
       mockStorageService.createProject.mockResolvedValue(mockProject);
 
-      const req = {} as Request;
+      const req = {
+        body: { name: 'Test Project' }
+      } as Request;
       const res = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),

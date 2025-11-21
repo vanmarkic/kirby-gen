@@ -122,7 +122,7 @@ describe('Auth Middleware', () => {
     it('should handle array of tokens', () => {
       mockEnv.AUTH_ENABLED = true;
       req.headers = {
-        authorization: ['test-secret-token'],
+        authorization: ['test-secret-token'] as any,
       };
 
       authenticate(req as Request, res as Response, next);

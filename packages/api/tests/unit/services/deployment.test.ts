@@ -8,8 +8,9 @@ import { DeploymentResult, DeploymentStatus, Deployment } from '../../../../shar
 // Mock modules
 jest.mock('fs/promises');
 jest.mock('child_process');
-jest.mock('nanoid', () => ({
-  nanoid: jest.fn(() => 'test-deployment-id-123')
+jest.mock('crypto', () => ({
+  ...jest.requireActual('crypto'),
+  randomUUID: jest.fn(() => 'test-deployment-id-123')
 }));
 
 describe('LocalDeploymentService', () => {

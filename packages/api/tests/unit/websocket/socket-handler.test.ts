@@ -57,7 +57,7 @@ describe('Socket Handler', () => {
       const emitter = setupSocketHandlers(mockIo);
 
       expect(emitter).toBeDefined();
-      expect(emitter.io).toBe(mockIo);
+      expect((emitter as any).io).toBe(mockIo);
     });
 
     it('should handle client connection', () => {

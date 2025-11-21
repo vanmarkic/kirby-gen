@@ -232,7 +232,7 @@ describe('File Controller', () => {
             path: '/uploads/test-project/logo-123.png',
           },
         ],
-      } as { [fieldname: string]: Express.Multer.File[] };
+      } as unknown as { [fieldname: string]: Express.Multer.File[] };
 
       mockStorageService.getProject.mockResolvedValue(mockProject);
       mockStorageService.updateProject.mockResolvedValue(undefined);
@@ -287,7 +287,7 @@ describe('File Controller', () => {
             path: '/uploads/test-project/guidelines-123.pdf',
           },
         ],
-      } as { [fieldname: string]: Express.Multer.File[] };
+      } as unknown as { [fieldname: string]: Express.Multer.File[] };
 
       mockStorageService.getProject.mockResolvedValue(mockProject);
       mockStorageService.updateProject.mockResolvedValue(undefined);
@@ -348,7 +348,7 @@ describe('File Controller', () => {
             path: '/uploads/test-project/guidelines-456.pdf',
           },
         ],
-      } as { [fieldname: string]: Express.Multer.File[] };
+      } as unknown as { [fieldname: string]: Express.Multer.File[] };
 
       mockStorageService.getProject.mockResolvedValue(mockProject);
       mockStorageService.updateProject.mockResolvedValue(undefined);
@@ -389,7 +389,7 @@ describe('File Controller', () => {
             path: '/uploads/test-project/logo-123.png',
           },
         ],
-      } as { [fieldname: string]: Express.Multer.File[] };
+      } as unknown as { [fieldname: string]: Express.Multer.File[] };
 
       mockStorageService.getProject.mockResolvedValue(null);
       (fs.unlink as jest.Mock).mockResolvedValue(undefined);
