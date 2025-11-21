@@ -73,6 +73,17 @@ describe('Auth Routes Integration', () => {
       expect(response.body.error.message).toBe('Request body validation failed');
     });
 
+    it('should return 400 with whitespace-only password', async () => {
+      mockEnv.AUTH_ENABLED = true;
+
+      const response = await request(app)
+        .post('/api/auth/login')
+        .send({ password: '   ' })
+        .expect(401);
+
+      expect(response.body.error.message).toBe('Password is required');
+    });
+
     it('should return 200 when auth disabled', async () => {
       mockEnv.AUTH_ENABLED = false;
 

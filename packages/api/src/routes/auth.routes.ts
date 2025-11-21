@@ -6,16 +6,15 @@ import { z } from 'zod';
 import { login } from '../controllers/auth.controller';
 import { asyncHandler } from '../middleware/error-handler';
 import { validateBody } from '../middleware/validator';
+import { loginLimiter } from '../middleware/rate-limiter';
 
 const router = Router();
 
 /**
- * Validation schemas
+ * Validation schema for login
  */
 const loginSchema = z.object({
-  body: z.object({
-    password: z.string().min(1, 'Password is required'),
-  }),
+  password: z.string().min(1, 'Password is required'),
 });
 
 /**
@@ -25,7 +24,8 @@ const loginSchema = z.object({
 // POST /api/auth/login - Login with password
 router.post(
   '/login',
-  validateBody(loginSchema.shape.body),
+  loginLimiter,
+  validateBody(loginSchema),
   asyncHandler(login)
 );
 

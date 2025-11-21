@@ -70,6 +70,14 @@ describe('Auth Controller', () => {
       await expect(login(req as Request, res as Response)).rejects.toThrow('Password is required');
     });
 
+    it('should return error with whitespace-only password', async () => {
+      mockEnv.AUTH_ENABLED = true;
+      req.body = { password: '   ' };
+
+      await expect(login(req as Request, res as Response)).rejects.toThrow(UnauthorizedError);
+      await expect(login(req as Request, res as Response)).rejects.toThrow('Password is required');
+    });
+
     it('should return success when auth is disabled', async () => {
       mockEnv.AUTH_ENABLED = false;
       req.body = { password: 'any-password' };
