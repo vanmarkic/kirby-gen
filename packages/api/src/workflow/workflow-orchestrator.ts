@@ -10,6 +10,7 @@ import {
   IStorageService,
   ISessionService,
   IDeploymentService,
+  IKirbyDeploymentService,
 } from '@kirby-gen/shared';
 import { SERVICE_KEYS } from '@kirby-gen/shared';
 import { getService } from '../config/di-setup';
@@ -34,12 +35,14 @@ export class WorkflowOrchestrator extends EventEmitter {
   private storageService: IStorageService;
   private sessionService: ISessionService;
   private deploymentService: IDeploymentService;
+  private kirbyDeploymentService: IKirbyDeploymentService;
 
   constructor() {
     super();
     this.storageService = getService<IStorageService>(SERVICE_KEYS.STORAGE);
     this.sessionService = getService<ISessionService>(SERVICE_KEYS.SESSION);
     this.deploymentService = getService<IDeploymentService>(SERVICE_KEYS.DEPLOYMENT);
+    this.kirbyDeploymentService = getService<IKirbyDeploymentService>(SERVICE_KEYS.KIRBY_DEPLOYMENT);
   }
 
   /**
@@ -76,6 +79,7 @@ export class WorkflowOrchestrator extends EventEmitter {
       await this.executePhase2_ContentStructuring(project, state, context);
       await this.executePhase3_DesignAutomation(project, state, context);
       await this.executePhase4_CMSAdaptation(project, state, context);
+      await this.executeInstantDeployment(project, state, context);
       await this.executePhase5_Deployment(project, state, context);
 
       // Mark as completed
@@ -339,6 +343,50 @@ export class WorkflowOrchestrator extends EventEmitter {
     } catch (error: any) {
       state.failedPhases.push(phase);
       throw new WorkflowErr(`CMS adaptation failed: ${error.message}`, phase, error);
+    }
+  }
+
+  /**
+   * Phase 4.5: Instant Demo Deployment
+   */
+  private async executeInstantDeployment(
+    project: ProjectData,
+    state: WorkflowState,
+    context: WorkflowContext
+  ): Promise<void> {
+    const phase = 'instant-demo';
+    state.currentPhase = phase;
+    state.currentPhaseOrder = 4.5;
+
+    this.emitProgress(state, 'started', 82, 'Deploying instant demo site...');
+
+    try {
+      // Deploy Kirby demo
+      this.emitProgress(state, 'in_progress', 83, 'Installing Kirby and copying blueprints...');
+      const deployment = await this.kirbyDeploymentService.deploy(project.id);
+
+      // Update project with deployment info
+      this.emitProgress(state, 'in_progress', 84, 'Updating project metadata...');
+      project.demoDeployment = {
+        url: deployment.url,
+        panelUrl: deployment.panelUrl,
+        deployedAt: deployment.deployedAt,
+        port: deployment.port,
+      };
+      await this.storageService.updateProject(project.id, project);
+
+      state.completedPhases.push(phase);
+      this.emitProgress(
+        state,
+        'completed',
+        85,
+        `Demo deployed: ${deployment.url}`
+      );
+
+      logWorkflowProgress(project.id, phase, 'completed', { deployment });
+    } catch (error: any) {
+      state.failedPhases.push(phase);
+      throw new WorkflowErr(`Instant deployment failed: ${error.message}`, phase, error);
     }
   }
 
