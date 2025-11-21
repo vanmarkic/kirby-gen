@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { ArrowRight, ArrowLeft, AlertCircle } from 'lucide-react';
 import FileUpload from '../components/FileUpload';
 import BrandingForm from '../components/BrandingForm';
 import { useProject } from '../hooks/useProject';
 import { fileEndpoints } from '../api/endpoints';
+import { MAX_FILES_PER_UPLOAD } from '@kirby-gen/shared';
 import type { BrandingConfig } from '@kirby-gen/shared';
 
 export default function InputPage() {
@@ -20,6 +21,7 @@ export default function InputPage() {
     fontFamily: 'Inter',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   // Redirect to home if projectId is missing
   useEffect(() => {
@@ -29,6 +31,13 @@ export default function InputPage() {
     }
   }, [projectId, navigate]);
 
+  // Clear validation error when files change
+  useEffect(() => {
+    if (validationError && files.length <= MAX_FILES_PER_UPLOAD) {
+      setValidationError(null);
+    }
+  }, [files.length, validationError]);
+
   // Don't render if no projectId
   if (!projectId) {
     return null;
@@ -37,6 +46,15 @@ export default function InputPage() {
   const handleSubmit = async () => {
     if (!projectId) return;
 
+    // Validate file count before uploading
+    if (files.length > MAX_FILES_PER_UPLOAD) {
+      setValidationError(
+        `Too many files selected. Maximum ${MAX_FILES_PER_UPLOAD} files allowed, but you have ${files.length} files.`
+      );
+      return;
+    }
+
+    setValidationError(null);
     setIsSubmitting(true);
     try {
       // Step 1: Upload content files if any
@@ -70,9 +88,18 @@ export default function InputPage() {
 
       // Navigate to domain mapping
       navigate(`/project/${projectId}/domain-mapping`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to upload files:', error);
-      navigate('/error', { state: { error: 'Failed to upload files' } });
+
+      // Extract error message from API response
+      let errorMessage = 'Failed to upload files';
+      if (error?.response?.data?.error?.message) {
+        errorMessage = error.response.data.error.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
+      setValidationError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -104,6 +131,13 @@ export default function InputPage() {
             <p className="section-description">
               Upload images, PDFs, or provide a Pinterest board URL
             </p>
+
+            {validationError && (
+              <div className="alert alert-error">
+                <AlertCircle size={20} />
+                <p>{validationError}</p>
+              </div>
+            )}
 
             <FileUpload
               files={files}
