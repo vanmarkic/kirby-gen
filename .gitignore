@@ -44,7 +44,7 @@ coverage/
 /sessions/
 /deployments/
 /repos/
-
+_project.json
 # Generated sites
 /packages/kirby-generator/output/
 

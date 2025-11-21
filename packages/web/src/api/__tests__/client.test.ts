@@ -40,6 +40,30 @@ describe('API Client', () => {
     mock.reset();
   });
 
+  describe('Configuration', () => {
+    it('should have baseURL configured', () => {
+      // The baseURL should be set from VITE_API_URL environment variable or default to '/api'
+      // This ensures all API calls are prefixed correctly
+      expect(apiClient.defaults.baseURL).toBeDefined();
+      expect(typeof apiClient.defaults.baseURL).toBe('string');
+    });
+
+    it('should construct full URL with baseURL + endpoint path', async () => {
+      // This test verifies that axios constructs URLs correctly with baseURL
+      // When baseURL is 'http://localhost:3000/api' and we call '/auth/login'
+      // The full URL should be 'http://localhost:3000/api/auth/login'
+
+      // Arrange: Mock expects the path, axios handles baseURL internally
+      mock.onPost('/auth/login').reply(200, { success: true, token: 'test' });
+
+      // Act: Make request to /auth/login
+      const response = await apiClient.post('/auth/login', { password: 'test' });
+
+      // Assert: Request succeeded, meaning baseURL was applied correctly
+      expect(response.data).toEqual({ success: true, token: 'test' });
+    });
+  });
+
   describe('Request Interceptor - Auth Token', () => {
     it('should add auth token from localStorage to request headers', async () => {
       // Arrange

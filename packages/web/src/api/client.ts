@@ -4,7 +4,7 @@ const AUTH_TOKEN_KEY = 'auth_token';
 
 // Create axios instance with default config
 export const apiClient = axios.create({
-  baseURL: '/api',
+  baseURL: '/api', // Use relative URL to leverage Vite proxy
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
