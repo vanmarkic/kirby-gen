@@ -8,7 +8,7 @@ interface SchemaVisualizationProps {
 export default function SchemaVisualization({
   schema,
 }: SchemaVisualizationProps) {
-  const renderField = (field: any) => {
+  const renderField = (field: { name: string; type: string; required?: boolean }) => {
     return (
       <div key={field.name} className="field">
         <span className="field-name">{field.name}</span>
@@ -41,7 +41,7 @@ export default function SchemaVisualization({
           <div className="entity-relationships">
             <h4>Relationships</h4>
             <div className="relationships-list">
-              {entity.relationships.map((rel) => (
+              {entity.relationships.map((rel: { name: string; targetEntity: string; type: string }) => (
                 <div key={rel.name} className="relationship">
                   <LinkIcon size={14} />
                   <span className="relationship-name">{rel.name}</span>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CheckCircle, AlertCircle } from 'lucide-react';
 import ProgressBar from '../components/ProgressBar';
@@ -13,6 +13,15 @@ export default function ProgressPage() {
   const { connect, disconnect, isConnected } = useWebSocket(projectId!);
   const { progress, status, error } = useProgressStore();
   const [hasStartedGeneration, setHasStartedGeneration] = useState(false);
+
+  const startGeneration = useCallback(async () => {
+    try {
+      await projectEndpoints.generate(projectId!);
+    } catch (error) {
+      console.error('Failed to start generation:', error);
+      navigate('/error', { state: { error: 'Failed to start generation' } });
+    }
+  }, [projectId, navigate]);
 
   useEffect(() => {
     if (!projectId) return;
@@ -29,7 +38,7 @@ export default function ProgressPage() {
     return () => {
       disconnect();
     };
-  }, [projectId, connect, disconnect, hasStartedGeneration]);
+  }, [projectId, connect, disconnect, hasStartedGeneration, startGeneration]);
 
   useEffect(() => {
     // Navigate to preview when complete
@@ -46,15 +55,6 @@ export default function ProgressPage() {
       }, 2000);
     }
   }, [status, projectId, navigate, error]);
-
-  const startGeneration = async () => {
-    try {
-      await projectEndpoints.generate(projectId!);
-    } catch (error) {
-      console.error('Failed to start generation:', error);
-      navigate('/error', { state: { error: 'Failed to start generation' } });
-    }
-  };
 
   const getStatusIcon = () => {
     switch (status) {

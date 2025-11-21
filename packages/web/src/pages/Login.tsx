@@ -25,9 +25,10 @@ export function Login() {
     try {
       await login(password);
       navigate('/');
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Extract error message from axios error structure
-      const errorMessage = err?.response?.data?.message || err?.message || 'Login failed';
+      const axiosError = err as { response?: { data?: { message?: string } }; message?: string };
+      const errorMessage = axiosError?.response?.data?.message || axiosError?.message || 'Login failed';
       setError(errorMessage);
     }
   };

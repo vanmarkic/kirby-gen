@@ -7,7 +7,7 @@ interface ProgressLogProps {
   projectId: string;
 }
 
-export default function ProgressLog({ projectId: _projectId }: ProgressLogProps) {
+export default function ProgressLog(_props: ProgressLogProps) {
   const { logs } = useProgressStore();
   const logEndRef = useRef<HTMLDivElement>(null);
 

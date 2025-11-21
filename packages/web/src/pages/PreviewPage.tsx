@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Download } from 'lucide-react';
 import DeploymentInfo from '../components/DeploymentInfo';
@@ -15,13 +15,7 @@ export default function PreviewPage() {
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (!projectId) return;
-
-    loadProject();
-  }, [projectId]);
-
-  const loadProject = async () => {
+  const loadProject = useCallback(async () => {
     if (!projectId) return;
 
     setIsLoading(true);
@@ -38,7 +32,12 @@ export default function PreviewPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [projectId, getProject, navigate]);
+
+  useEffect(() => {
+    if (!projectId) return;
+    loadProject();
+  }, [projectId, loadProject]);
 
   const handleDownload = async () => {
     if (!projectId) return;

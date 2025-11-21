@@ -5,6 +5,7 @@
 import { createApp } from './app';
 import { Server } from './server';
 import { setupDependencyInjection, cleanupServices } from './config/di-setup';
+import { validateDIContainer } from './config/di-validation';
 import { logger } from './config/logger';
 import { env } from './config/env';
 
@@ -17,6 +18,9 @@ async function main() {
 
     // Setup dependency injection
     setupDependencyInjection();
+
+    // POKA-YOKE: Validate all services are registered
+    validateDIContainer();
 
     // Create Express app
     const app = createApp();

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Bot, User } from 'lucide-react';
 import type { DomainSchema, Message } from '@kirby-gen/shared';
 import { domainMappingEndpoints } from '../api/endpoints';
@@ -17,23 +17,15 @@ export default function ConversationUI({
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    // Initialize conversation
-    initializeConversation();
-  }, [projectId]);
-
-  useEffect(() => {
-    // Auto-scroll to bottom
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  const initializeConversation = async () => {
+  const initializeConversation = useCallback(async () => {
     try {
+      setError(null);
       const data = await domainMappingEndpoints.initialize(projectId);
 
-      if (data.initialMessage) {
+      if (data?.initialMessage) {
         setMessages([
           {
             role: 'assistant',
@@ -42,10 +34,30 @@ export default function ConversationUI({
           },
         ]);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Failed to initialize conversation:', error);
+
+      // Set user-friendly error message
+      const axiosError = error as { response?: { status: number }; message?: string };
+      if (axiosError?.response?.status === 401) {
+        setError('Authentication required. Please log in to continue.');
+      } else if (axiosError?.message === 'Network Error') {
+        setError('Network error. Please check your connection and try again.');
+      } else {
+        setError('Failed to initialize conversation. Please refresh the page.');
+      }
     }
-  };
+  }, [projectId]);
+
+  useEffect(() => {
+    // Initialize conversation
+    initializeConversation();
+  }, [initializeConversation]);
+
+  useEffect(() => {
+    // Auto-scroll to bottom
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,6 +74,7 @@ export default function ConversationUI({
     setIsLoading(true);
 
     try {
+      setError(null);
       const data = await domainMappingEndpoints.sendMessage(projectId, {
         message: input,
         conversationHistory: messages,
@@ -84,11 +97,23 @@ export default function ConversationUI({
       if (data.isComplete) {
         onComplete();
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Failed to send message:', error);
+
+      // Provide user-friendly error messages
+      let errorContent = 'Sorry, I encountered an error. Please try again.';
+      const err = error as { response?: { status?: number }; message?: string };
+
+      if (err?.response?.status === 401) {
+        errorContent = 'Your session has expired. Please log in again.';
+        setError('Authentication required. Please log in to continue.');
+      } else if (err?.message === 'Network Error') {
+        errorContent = 'Network error. Please check your connection.';
+      }
+
       const errorMessage: Message = {
         role: 'assistant',
-        content: 'Sorry, I encountered an error. Please try again.',
+        content: errorContent,
         timestamp: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -99,6 +124,11 @@ export default function ConversationUI({
 
   return (
     <div className="conversation-ui">
+      {error && (
+        <div className="alert alert-error" style={{ marginBottom: '1rem' }}>
+          {error}
+        </div>
+      )}
       <div className="messages">
         {messages.map((message, index) => (
           <div

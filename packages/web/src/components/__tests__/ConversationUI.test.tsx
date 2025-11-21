@@ -21,8 +21,6 @@ describe('ConversationUI - Error Handling', () => {
 
   describe('Initialization Error Handling', () => {
     it('should handle 401 unauthorized error gracefully without crashing', async () => {
-      // This test should FAIL initially because ConversationUI doesn't handle
-      // the case where data is undefined due to 401 error
       mock.onPost(`/projects/${projectId}/domain-mapping/init`).reply(401, {
         error: {
           code: 'UNAUTHORIZED',
@@ -31,26 +29,24 @@ describe('ConversationUI - Error Handling', () => {
         },
       });
 
-      // Should not throw error
-      expect(() => {
-        render(
-          <ConversationUI
-            projectId={projectId}
-            onSchemaUpdate={mockOnSchemaUpdate}
-            onComplete={mockOnComplete}
-          />
-        );
-      }).not.toThrow();
+      render(
+        <ConversationUI
+          projectId={projectId}
+          onSchemaUpdate={mockOnSchemaUpdate}
+          onComplete={mockOnComplete}
+        />
+      );
 
-      // Wait for initialization to complete (and fail)
+      // Wait for error message to appear
       await waitFor(() => {
-        // The component should still be rendered
-        expect(screen.getByPlaceholderText('Type your message...')).toBeInTheDocument();
+        expect(screen.getByText(/authentication required/i)).toBeInTheDocument();
       });
 
-      // Should not have any messages (since initialization failed)
-      const messages = screen.queryAllByRole('generic', { name: /message/ });
-      expect(messages.length).toBe(0);
+      // Should still have the input field
+      expect(screen.getByPlaceholderText('Type your message...')).toBeInTheDocument();
+
+      // Should not have any conversation messages (since initialization failed)
+      expect(screen.queryByRole('generic', { name: /message-assistant/ })).not.toBeInTheDocument();
     });
 
     it('should handle network error gracefully without crashing', async () => {

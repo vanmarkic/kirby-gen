@@ -50,6 +50,10 @@ npm run test:unit              # All unit tests
 npm run test:integration       # All integration tests
 npm run test:e2e               # E2E tests (API package only)
 
+# Smoke tests (Poka-Yoke validation)
+npm run test:smoke             # Run against $API_URL
+npm run test:smoke:local       # Run against localhost:3001
+
 # Watch mode for active development
 npm run test:watch --workspace=packages/api
 
@@ -175,8 +179,49 @@ const service = container.resolve<IMyService>('myService');
 
 ## Important Conventions
 
+### Poka-Yoke (Mistake-Proofing) Measures
+
+This project employs several poka-yoke techniques to prevent common errors:
+
+#### 1. **Authentication Enforcement** ✅
+- **ESLint Rule**: Bans raw `fetch()` in frontend (`packages/web/.eslintrc.cjs`)
+- **Compile-Time**: Prevents bypassing `apiClient` authentication
+- **All API calls** must use centralized endpoints (`packages/web/src/api/endpoints.ts`)
+- See: `docs/plans/2025-11-21-authentication-poka-yoke-design.md`
+
+#### 2. **Environment Variable Validation** ✅
+- **Zod Schema**: Validates all env vars at startup (`packages/api/src/config/env.ts`)
+- **Type-Safe**: Automatic coercion (strings → numbers/booleans)
+- **Fails Fast**: Clear error messages if configuration is invalid
+- **Config Drift Detection**: Validates env matches shared constants
+
+#### 3. **DI Container Validation** ✅
+- **Startup Check**: Validates all services registered (`packages/api/src/config/di-validation.ts`)
+- **Prevents**: Runtime "service not found" errors
+- **Reports**: Missing or failed service registrations with clear messages
+
+#### 4. **Smoke Tests** ✅
+- **Script**: `scripts/smoke-test.sh` - Automated post-deployment validation
+- **Commands**: `npm run test:smoke` or `npm run test:smoke:local`
+- **Validates**: Health checks, authentication enforcement, CORS, 404 handling
+- **Use**: Run after deployment or before releasing changes
+
+#### 5. **Comprehensive Test Coverage**
+- **TDD**: Write tests first, watch them fail, then implement
+- **Integration Tests**: Verify auth tokens included in all API requests
+- **E2E Tests**: Full user flows including authentication
+
+#### 6. **Additional Safeguards**
+- **Zod Validation**: All API request/response validation (`packages/api/src/middleware/validator.ts`)
+- **File Upload Limits**: Single source of truth (`packages/shared/src/constants/file-types.ts`)
+- **Error Boundaries**: Custom error classes with context (`packages/api/src/utils/errors.ts`)
+
+**See Also**: `docs/plans/2025-11-21-comprehensive-poka-yoke-enhancements.md` for planned improvements.
+
 ### Environment Configuration
 All environment variables are loaded from `.env` via `packages/api/src/config/env.ts`.
+
+**IMPORTANT**: Environment variables are validated with Zod at startup. Invalid configuration will fail fast with clear error messages.
 
 **Authentication** (Simple Token - Development Only):
 - `AUTH_ENABLED` - Enable/disable authentication barrier (default: false)

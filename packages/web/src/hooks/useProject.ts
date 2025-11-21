@@ -8,7 +8,6 @@ export function useProject() {
   const queryClient = useQueryClient();
   const {
     setCurrentProject,
-    setProjects: _setProjects, // Unused but required by type
     addProject: addProjectToStore,
     updateProject: updateProjectInStore,
     removeProject: removeProjectFromStore,

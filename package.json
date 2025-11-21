@@ -25,6 +25,8 @@
     "test:unit": "npm run test:unit --workspaces --if-present",
     "test:integration": "npm run test:integration --workspaces --if-present",
     "test:e2e": "npm run test:e2e --workspace=packages/api",
+    "test:smoke": "bash scripts/smoke-test.sh",
+    "test:smoke:local": "API_URL=http://localhost:3001 bash scripts/smoke-test.sh",
     "test:playwright": "playwright test tests/e2e/happy-path.test.ts --config=tests/e2e/playwright.config.ts",
     "test:playwright:headed": "playwright test tests/e2e/happy-path.test.ts --config=tests/e2e/playwright.config.ts --headed",
     "test:playwright:ui": "playwright test tests/e2e/happy-path.test.ts --config=tests/e2e/playwright.config.ts --ui",

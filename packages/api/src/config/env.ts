@@ -1,8 +1,16 @@
 /**
  * Environment variable validation and configuration
+ *
+ * POKA-YOKE: This file validates all environment variables at startup using Zod.
+ * Benefits:
+ * - Type-safe environment access throughout the application
+ * - Fails fast with clear error messages if config is invalid
+ * - Automatic type coercion (strings → numbers/booleans)
+ * - Self-documenting environment requirements
  */
 import { z } from 'zod';
 import dotenv from 'dotenv';
+import { MAX_FILE_SIZE } from '@kirby-gen/shared';
 
 // Load environment variables
 dotenv.config();
@@ -29,7 +37,8 @@ const envSchema = z.object({
   RATE_LIMIT_MAX_REQUESTS: z.string().default('100').transform(Number),
 
   // File Upload
-  MAX_FILE_SIZE: z.string().default('52428800').transform(Number), // 50MB
+  // POKA-YOKE: Default matches shared constant to prevent config drift
+  MAX_FILE_SIZE: z.string().default(String(MAX_FILE_SIZE)).transform(Number),
   UPLOAD_DIR: z.string().default('./data/uploads'),
 
   // Storage
@@ -86,6 +95,16 @@ let env: Env;
 
 try {
   env = envSchema.parse(process.env);
+
+  // POKA-YOKE: Validate consistency with shared constants
+  if (env.MAX_FILE_SIZE !== MAX_FILE_SIZE) {
+    throw new Error(
+      `Configuration drift detected!\n` +
+      `  env.MAX_FILE_SIZE (${env.MAX_FILE_SIZE}) !== ` +
+      `shared MAX_FILE_SIZE (${MAX_FILE_SIZE})\n` +
+      `  Fix: Update .env or shared/src/constants/file-types.ts`
+    );
+  }
 } catch (error) {
   if (error instanceof z.ZodError) {
     console.error('❌ Environment variable validation failed:');

@@ -55,8 +55,8 @@ export default function InputPage() {
       }
 
       // Step 2: Update project metadata (Pinterest URL and branding)
-      const updateData: any = {
-        inputs: {},
+      const updateData = {
+        inputs: {} as Record<string, unknown>,
       };
 
       if (pinterestUrl) {
@@ -80,15 +80,16 @@ export default function InputPage() {
 
       // Navigate to domain mapping
       navigate(`/project/${projectId}/domain-mapping`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to upload files:', error);
 
       // Extract error message from API response
       let errorMessage = 'Failed to upload files';
-      if (error?.response?.data?.error?.message) {
-        errorMessage = error.response.data.error.message;
-      } else if (error?.message) {
-        errorMessage = error.message;
+      const axiosError = error as { response?: { data?: { error?: { message?: string } } }; message?: string };
+      if (axiosError?.response?.data?.error?.message) {
+        errorMessage = axiosError.response.data.error.message;
+      } else if (axiosError?.message) {
+        errorMessage = axiosError.message;
       }
 
       setValidationError(errorMessage);

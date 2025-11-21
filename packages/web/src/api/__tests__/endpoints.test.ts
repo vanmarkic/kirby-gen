@@ -1,8 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import MockAdapter from 'axios-mock-adapter';
 import { apiClient } from '../client';
 import { projectEndpoints, domainMappingEndpoints, fileEndpoints } from '../endpoints';
-import type { Project } from '@kirby-gen/shared';
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -221,9 +220,10 @@ describe('API Endpoints - Authentication Integration', () => {
       try {
         await domainMappingEndpoints.initialize(projectId);
         expect.fail('Should have thrown error');
-      } catch (error: any) {
-        expect(error.response.status).toBe(401);
-        expect(error.response.data.message).toBe(errorMessage);
+      } catch (error) {
+        const axiosError = error as { response: { status: number; data: { message: string } } };
+        expect(axiosError.response.status).toBe(401);
+        expect(axiosError.response.data.message).toBe(errorMessage);
       }
     });
   });

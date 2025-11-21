@@ -49,7 +49,7 @@ test.describe('Authentication Login', () => {
     expect(loginRequest).toBe('http://localhost:5176/api/auth/login');
   });
 
-  test('should successfully login when auth is disabled', async ({ page, context }) => {
+  test('should successfully login when auth is disabled', async ({ page }) => {
     // Arrange: Navigate to login page
     await page.goto('http://localhost:5176/login');
 
