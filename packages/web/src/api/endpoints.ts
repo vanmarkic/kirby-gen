@@ -18,12 +18,8 @@ export const projectEndpoints = {
     return response.data.data;
   },
 
-  update: async (id: string, data: FormData): Promise<Project> => {
-    const response = await apiClient.put(`/projects/${id}`, data, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+  update: async (id: string, data: Partial<Project>): Promise<Project> => {
+    const response = await apiClient.put(`/projects/${id}`, data);
     return response.data.data;
   },
 
@@ -87,6 +83,19 @@ export const domainMappingEndpoints = {
 
 // File upload endpoints
 export const fileEndpoints = {
+  uploadContent: async (projectId: string, files: File[]): Promise<void> => {
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append('files', file);
+    });
+
+    await apiClient.post(`/projects/${projectId}/files/content`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
   upload: async (projectId: string, files: File[]): Promise<void> => {
     const formData = new FormData();
     files.forEach((file) => {

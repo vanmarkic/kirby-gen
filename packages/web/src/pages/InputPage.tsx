@@ -4,6 +4,7 @@ import { ArrowRight, ArrowLeft } from 'lucide-react';
 import FileUpload from '../components/FileUpload';
 import BrandingForm from '../components/BrandingForm';
 import { useProject } from '../hooks/useProject';
+import { fileEndpoints } from '../api/endpoints';
 import type { BrandingConfig } from '@kirby-gen/shared';
 
 export default function InputPage() {
@@ -38,19 +39,34 @@ export default function InputPage() {
 
     setIsSubmitting(true);
     try {
-      // Upload files and update project
-      const formData = new FormData();
-      files.forEach((file) => {
-        formData.append('files', file);
-      });
-
-      if (pinterestUrl) {
-        formData.append('pinterestUrl', pinterestUrl);
+      // Step 1: Upload content files if any
+      if (files.length > 0) {
+        await fileEndpoints.uploadContent(projectId, files);
       }
 
-      formData.append('branding', JSON.stringify(branding));
+      // Step 2: Update project metadata (Pinterest URL and branding)
+      const updateData: any = {
+        inputs: {},
+      };
 
-      await updateProject(projectId, formData);
+      if (pinterestUrl) {
+        updateData.inputs.pinterestUrl = pinterestUrl;
+      }
+
+      if (branding) {
+        updateData.inputs.brandingAssets = {
+          colors: {
+            primary: branding.primaryColor,
+            secondary: branding.secondaryColor,
+          },
+          fonts: [{ family: branding.fontFamily }],
+        };
+      }
+
+      // Only update if there's metadata to update
+      if (Object.keys(updateData.inputs).length > 0) {
+        await updateProject(projectId, updateData);
+      }
 
       // Navigate to domain mapping
       navigate(`/project/${projectId}/domain-mapping`);

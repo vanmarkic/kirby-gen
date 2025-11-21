@@ -43,7 +43,7 @@ export function useProject() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: FormData }) =>
+    mutationFn: ({ id, data }: { id: string; data: Partial<Project> }) =>
       projectEndpoints.update(id, data),
     onSuccess: (project) => {
       updateProjectInStore(project.id, project);
@@ -83,7 +83,7 @@ export function useProject() {
   );
 
   const updateProject = useCallback(
-    async (id: string, data: FormData): Promise<Project> => {
+    async (id: string, data: Partial<Project>): Promise<Project> => {
       return await updateMutation.mutateAsync({ id, data });
     },
     [updateMutation]
